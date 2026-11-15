@@ -926,275 +926,193 @@
       .nav-pill__link { opacity: 1 !important; transform: none !important; }
     }
 
-    /* =========================================================
-       МОБИЛЬНЫЕ ПРАВКИ — БЛОК КОНТАКТОВ + АНИМАЦИИ
+       /* =========================================================
+       ЖЕСТКАЯ МОБИЛЬНАЯ ФИКСАЦИЯ БЛОКА КОНТАКТОВ
        ========================================================= */
-
     @media (max-width: 900px) {
+      /* Запрещаем горизонтальный скролл */
+      html, body {
+        overflow-x: hidden;
+        max-width: 100vw;
+      }
 
-      /* ---------- Секция контактов ---------- */
+      /* Контейнер секции */
       #contact.section {
-        padding: 48px 0 40px;
+        padding: 48px 0 60px;
       }
-
       #contact .container {
-        width: calc(100% - 32px);
+        width: 100%;
+        max-width: 100%;
+        padding-left: 16px;
+        padding-right: 16px;
+        margin: 0;
       }
 
-      /* Заголовок и подзаголовок контактов */
+      /* Сетка контактов в одну колонку */
+      #contact .contact-wrap {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+        width: 100%;
+      }
+
+      /* Инфо-блок */
       #contact .contact-info {
         display: flex;
         flex-direction: column;
+        align-items: flex-start;
         width: 100%;
-        margin-bottom: 8px;
       }
       #contact .contact-info .eyebrow {
-        margin-bottom: 10px;
-        font-size: .62rem;
+        display: none; /* Убираем пустой отступ сверху */
       }
       #contact .contact-info .section-title {
-        font-size: clamp(1.5rem, 7vw, 1.95rem);
+        font-size: clamp(1.6rem, 7vw, 2rem);
         line-height: 1.15;
-        margin-bottom: 12px;
-        display: block;
-      }
-      #contact .contact-info .section-title::after {
-        bottom: -6px;
+        margin-bottom: 16px;
+        width: 100%;
       }
       #contact .contact-info > p {
-        font-size: .88rem;
-        line-height: 1.55;
-        margin-bottom: 22px;
-        max-width: 100%;
+        font-size: .9rem;
+        line-height: 1.5;
+        margin-bottom: 24px;
+        width: 100%;
       }
 
-      /* Контактные строки — ровно, в одну колонку */
+      /* Строки контактов: иконка слева, текст справа, все ровно */
       #contact .contact-line {
-        display: flex;
-        align-items: flex-start;
-        gap: 12px;
-        margin-bottom: 14px;
-        padding: 12px 14px;
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        width: 100% !important;
+        box-sizing: border-box;
+        padding: 14px 16px;
+        margin-bottom: 10px;
         background: var(--bg-card);
         border: 1px solid var(--line);
         border-radius: 12px;
-        font-size: .86rem;
-        line-height: 1.4;
-        transition: border-color .3s var(--ease), transform .3s var(--ease);
-      }
-      #contact .contact-line:hover,
-      #contact .contact-line:active {
-        transform: none;
-        border-color: var(--line-strong);
+        gap: 14px;
+        opacity: 1 !important; /* Отключаем задержки появления, чтобы не было "прыжков" */
+        transform: none !important;
       }
       #contact .contact-line:last-of-type {
-        margin-bottom: 28px;
+        margin-bottom: 0;
       }
+      
       #contact .contact-line-icon {
-        width: 34px;
-        height: 34px;
-        border-radius: 8px;
+        width: 36px !important;
+        height: 36px !important;
         flex-shrink: 0;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
       #contact .contact-line-icon svg {
-        width: 14px;
-        height: 14px;
+        width: 16px;
+        height: 16px;
       }
+
+      /* Текстовая часть внутри строки */
       #contact .contact-line > div:last-child {
         flex: 1;
         min-width: 0;
+        font-size: .95rem;
+        line-height: 1.4;
+        text-align: left;
         word-break: break-word;
       }
       #contact .contact-line small {
-        font-size: .58rem;
+        font-size: .65rem;
         letter-spacing: .1em;
-        margin-bottom: 2px;
+        margin-bottom: 4px;
+        color: var(--text-muted);
       }
 
-      /* ---------- Форма ---------- */
-      #contact .contact-wrap {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 20px;
-        width: 100%;
-      }
+      /* Форма */
       #contact .form {
-        width: 100%;
-        padding: 22px 18px;
-        border-radius: 14px;
+        width: 100% !important;
+        box-sizing: border-box;
+        padding: 24px 20px;
+        border-radius: 16px;
       }
       #contact .form h3 {
-        font-size: 1.02rem;
-        margin-bottom: 4px;
-        line-height: 1.3;
+        font-size: 1.15rem;
+        margin-bottom: 6px;
       }
       #contact .form-note {
-        font-size: .78rem;
-        margin-bottom: 16px;
-        line-height: 1.45;
+        font-size: .85rem;
+        margin-bottom: 20px;
       }
       #contact .timer-line {
-        padding: 9px 12px;
-        font-size: .72rem;
-        margin-bottom: 16px;
-        border-radius: 8px;
-        line-height: 1.35;
+        padding: 10px 14px;
+        font-size: .8rem;
+        margin-bottom: 20px;
       }
+
+      /* Поля ввода */
       #contact .form-group {
-        margin-bottom: 12px;
-      }
-      #contact .form-group label {
-        font-size: .62rem;
-        margin-bottom: 5px;
-        letter-spacing: .08em;
+        margin-bottom: 16px;
+        width: 100%;
       }
       #contact .form-group input,
       #contact .form-group textarea,
       #contact .form-group select {
-        padding: 12px 14px;
-        border-radius: 9px;
-        font-size: 16px; /* iOS: без зума */
-        line-height: 1.35;
+        width: 100% !important;
+        box-sizing: border-box;
+        padding: 14px 16px;
+        font-size: 16px !important; /* iOS без зума */
+        border-radius: 10px;
       }
-      #contact .form-group textarea {
-        min-height: 76px;
-      }
+
+      /* Кнопка отправки */
       #contact .form-submit {
-        width: 100%;
-        margin-top: 6px;
-        padding: 14px 20px;
-        font-size: .82rem;
-        letter-spacing: .05em;
-      }
-      #contact .form-success {
-        font-size: .8rem;
-        padding: 12px;
+        width: 100% !important;
+        box-sizing: border-box;
+        padding: 16px;
+        font-size: .9rem;
+        margin-top: 8px;
       }
 
-      /* ---------- Плавные анимации для телефона ---------- */
-
-      /* Reveal для контактов — мягкий, с направлением */
-      #contact .contact-info.reveal-left {
-        transform: translateX(-24px);
-        transition: opacity .7s var(--ease), transform .7s var(--ease);
+      /* Отключаем каскадные анимации полей, которые могут ломать верстку */
+      #contact .form .form-group {
+        opacity: 1 !important;
+        transform: none !important;
+        animation: none !important;
       }
-      #contact .contact-info.reveal-left.visible {
-        transform: translateX(0);
-      }
-      #contact .form.reveal-right {
-        transform: translateY(24px);
-        transition: opacity .7s var(--ease), transform .7s var(--ease);
-      }
-      #contact .form.reveal-right.visible {
-        transform: translateY(0);
+      #contact .form .form-submit {
+        opacity: 1 !important;
+        transform: none !important;
+        animation: none !important;
       }
 
-      /* Каскадное появление контактных строк */
-      #contact .contact-line {
+      /* Убираем возможные "вылеты" псевдоэлементов заголовка */
+      #contact .section-title::after {
+        display: none;
+      }
+
+      /* Скрываем FAB-кнопку при открытом селекте (опционально, чтобы не перекрывала) */
+      #contact .form:focus-within ~ .quick-fab {
         opacity: 0;
-        transform: translateY(12px);
-        transition: opacity .5s var(--ease), transform .5s var(--ease), border-color .3s var(--ease);
-      }
-      #contact .contact-info.visible .contact-line {
-        opacity: 1;
-        transform: translateY(0);
-      }
-      #contact .contact-info.visible .contact-line:nth-of-type(1) { transition-delay: .1s; }
-      #contact .contact-info.visible .contact-line:nth-of-type(2) { transition-delay: .18s; }
-      #contact .contact-info.visible .contact-line:nth-of-type(3) { transition-delay: .26s; }
-
-      /* Поля формы — мягкое появление */
-      #contact .form.visible .form-group {
-        opacity: 0;
-        transform: translateY(10px);
-        transition: opacity .45s var(--ease), transform .45s var(--ease);
-      }
-      #contact .form.visible .form-group:nth-of-type(1) { animation: fieldIn .5s var(--ease) .15s forwards; }
-      #contact .form.visible .form-group:nth-of-type(2) { animation: fieldIn .5s var(--ease) .22s forwards; }
-      #contact .form.visible .form-group:nth-of-type(3) { animation: fieldIn .5s var(--ease) .29s forwards; }
-      #contact .form.visible .form-group:nth-of-type(4) { animation: fieldIn .5s var(--ease) .36s forwards; }
-      @keyframes fieldIn {
-        to { opacity: 1; transform: translateY(0); }
-      }
-
-      /* Кнопка отправки — лёгкий пульс при появлении */
-      #contact .form.visible .form-submit {
-        animation: submitIn .55s var(--ease) .45s both;
-      }
-      @keyframes submitIn {
-        0%   { opacity: 0; transform: translateY(10px) scale(.98); }
-        100% { opacity: 1; transform: translateY(0) scale(1); }
-      }
-
-      /* Фокус на полях — мягкое свечение рамки */
-      #contact .form-group input:focus,
-      #contact .form-group textarea:focus,
-      #contact .form-group select:focus {
-        border-color: var(--text);
-        box-shadow: 0 0 0 3px color-mix(in srgb, var(--text) 10%, transparent);
-        background: var(--bg);
-        transition: border-color .3s var(--ease), box-shadow .3s var(--ease), background .3s var(--ease);
-      }
-
-      /* Ошибка — лёгкая вибрация */
-      #contact .form-group.invalid input,
-      #contact .form-group.invalid textarea {
-        animation: shake .4s var(--ease);
-      }
-      @keyframes shake {
-        0%, 100% { transform: translateX(0); }
-        20% { transform: translateX(-4px); }
-        40% { transform: translateX(4px); }
-        60% { transform: translateX(-3px); }
-        80% { transform: translateX(3px); }
-      }
-
-      /* Сообщение об успехе — плавное всплытие */
-      #contact .form-success {
-        animation: successPop .5s var(--ease);
-      }
-      @keyframes successPop {
-        from { opacity: 0; transform: translateY(10px) scale(.97); }
-        to   { opacity: 1; transform: translateY(0) scale(1); }
-      }
-
-      /* Иконки контактных строк — мягкий hover (для тапа) */
-      #contact .contact-line:active .contact-line-icon {
-        background: var(--text);
-        border-color: var(--text);
-      }
-      #contact .contact-line:active .contact-line-icon svg {
-        stroke: var(--bg);
+        pointer-events: none;
       }
     }
 
-    /* Дополнительно для очень узких экранов */
-    @media (max-width: 400px) {
+    /* Очень узкие экраны (iPhone SE и подобные) */
+    @media (max-width: 380px) {
       #contact .contact-info .section-title {
-        font-size: 1.5rem;
+        font-size: 1.4rem;
       }
       #contact .form {
         padding: 20px 16px;
       }
-      #contact .form-group input,
-      #contact .form-group textarea,
-      #contact .form-group select {
-        padding: 11px 13px;
+      #contact .contact-line {
+        padding: 12px 14px;
+        gap: 10px;
       }
-    }
-
-    /* При reduced-motion — отключаем новые анимации */
-    @media (prefers-reduced-motion: reduce) {
-      #contact .contact-info.reveal-left,
-      #contact .form.reveal-right,
-      #contact .contact-line,
-      #contact .form .form-group,
-      #contact .form .form-submit,
-      #contact .form-success {
-        opacity: 1 !important;
-        transform: none !important;
-        transition: none !important;
-        animation: none !important;
+      #contact .contact-line-icon {
+        width: 32px !important;
+        height: 32px !important;
       }
     }
   </style>
