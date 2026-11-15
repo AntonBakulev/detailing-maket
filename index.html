@@ -120,7 +120,6 @@
       min-height: 46px;
     }
 
-    /* Логотип слева */
     .logo {
       font-size: 1.18rem; font-weight: 800; letter-spacing: .08em;
       text-transform: uppercase; white-space: nowrap;
@@ -132,7 +131,6 @@
     .logo:hover { letter-spacing: .16em; }
     .logo span { color: var(--text-muted); font-weight: 400; }
 
-    /* Блок по центру: пилюля + бургер */
     .header-actions {
       position: absolute;
       left: 50%;
@@ -142,7 +140,6 @@
       z-index: 2;
     }
 
-    /* Телефон — в правом углу */
     .header-phone {
       position: absolute;
       right: 0;
@@ -306,7 +303,6 @@
     .menu-trigger.active span:nth-child(3) { transform: translate(4px, -4px); }
     .menu-trigger.active span:nth-child(4) { transform: translate(-4px, -4px); }
 
-    /* ===== АДАПТИВ ШАПКИ ===== */
     @media (max-width: 1100px) {
       .nav-pill__link { padding: 8px 10px; font-size: .74rem; }
       .header-phone { display: none; }
@@ -894,7 +890,7 @@
     .recently-list a { padding: 8px 16px; border-radius: 999px; border: 1px solid var(--line); font-size: .78rem; color: var(--text-muted); transition: all .3s; }
     .recently-list a:hover { border-color: var(--text); color: var(--text); }
 
-    /* ===== RESPONSIVE ===== */
+    /* ===== RESPONSIVE (существующие) ===== */
     @media (max-width: 900px) { .contact-wrap { grid-template-columns: 1fr; } .service-details { grid-template-columns: 1fr; gap: 28px; } }
     @media (max-width: 768px) {
       .section { padding: 72px 0; }
@@ -929,6 +925,228 @@
       .nav-pill__links { max-width: none !important; opacity: 1 !important; }
       .nav-pill__link { opacity: 1 !important; transform: none !important; }
     }
+
+    /* =========================================================
+       МОБИЛЬНЫЕ ПРАВКИ — телефон
+       ========================================================= */
+    @media (max-width: 900px) {
+      /* Шапка */
+      .header { padding: 12px 0; }
+      .header.scrolled { padding: 8px 0; }
+      .header-inner { min-height: 44px; gap: 12px; }
+      .logo { font-size: 1rem; letter-spacing: .06em; }
+      .logo:hover { letter-spacing: .06em; }
+      .nav-pill { display: none; }
+      .header-phone { display: none; }
+      .header-actions { gap: 8px; }
+      .menu-trigger { width: 44px; height: 44px; padding: 12px; }
+      .menu-trigger span { width: 4px; height: 4px; }
+
+      /* Hero */
+      .hero { padding-top: 100px; padding-bottom: 48px; min-height: 100svh; }
+      .hero-content { max-width: 100%; }
+      .hero-badge { font-size: .64rem; padding: 6px 12px; letter-spacing: .12em; margin-bottom: 20px; }
+      .hero h1 { font-size: clamp(1.9rem, 9vw, 3rem); line-height: 1.06; letter-spacing: -.025em; margin-bottom: 18px; }
+      .hero p { font-size: .96rem; margin-bottom: 26px; max-width: 100%; }
+      .hero-actions { gap: 10px; }
+      .hero-actions .btn { width: 100%; }
+      .hero-stats { gap: 20px 28px; margin-top: 36px; padding-top: 22px; flex-wrap: wrap; }
+      .hero-stat strong { font-size: 1.5rem; }
+      .hero-stat span { font-size: .68rem; letter-spacing: .06em; }
+      .scroll-indicator { display: none; }
+
+      /* Бегущая строка */
+      .numbers-ticker { padding: 14px 0; }
+      .numbers-ticker .ticker-item { font-size: .82rem; padding: 0 16px; gap: 16px; }
+      .numbers-ticker .ticker-item::after { font-size: .55em; }
+
+      /* Секции */
+      .section { padding: 56px 0; }
+      .section-title { font-size: clamp(1.6rem, 6.5vw, 2.2rem); }
+      .section-subtitle { font-size: .95rem; margin-bottom: 32px; margin-top: 16px; }
+
+      /* Фильтр */
+      .filter-bar { flex-direction: column; align-items: stretch; gap: 12px; }
+      .filter-tabs { gap: 6px; overflow-x: auto; flex-wrap: nowrap; padding-bottom: 4px; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+      .filter-tabs::-webkit-scrollbar { display: none; }
+      .filter-btn { flex-shrink: 0; padding: 8px 14px; font-size: .68rem; letter-spacing: .06em; }
+      .compare-toggle { padding: 10px 18px; font-size: .72rem; align-self: flex-start; }
+
+      /* Карточки услуг */
+      .services-grid { grid-template-columns: 1fr; gap: 14px; }
+      .service-media { aspect-ratio: 16 / 10; }
+      .service-body { padding: 18px 20px 22px; }
+      .service-body h3 { font-size: 1rem; margin-bottom: 6px; }
+      .service-body p { font-size: .84rem; margin-bottom: 14px; }
+      .service-footer { gap: 8px; }
+      .service-link { font-size: .7rem; }
+      .quick-calc { padding: 7px 12px; font-size: .66rem; letter-spacing: .06em; }
+      .card-actions { top: 10px; right: 10px; gap: 5px; }
+      .fav-btn, .compare-check { width: 30px; height: 30px; }
+      .fav-btn svg, .compare-check svg { width: 13px; height: 13px; }
+      .service-icon { width: 40px; height: 40px; left: 16px; bottom: 14px; }
+      .service-icon svg { width: 18px; height: 18px; }
+
+      /* Калькулятор */
+      .calc { grid-template-columns: 1fr; padding: 24px 18px; gap: 20px; border-radius: 14px; }
+      .calc h3 { font-size: 1rem; }
+      .calc > div > p { font-size: .82rem; margin-bottom: 18px; }
+      .calc-field { margin-bottom: 14px; }
+      .calc-field label { font-size: .66rem; margin-bottom: 6px; }
+      .calc-field select { padding: 11px 12px; font-size: .88rem; }
+      .calc-price { border-left: none; border-top: 1px solid var(--line); padding-left: 0; padding-top: 20px; align-items: stretch; }
+      .calc-price small { font-size: .64rem; }
+      .calc-price strong { font-size: 1.9rem; }
+      .calc-price .note { font-size: .7rem; margin-top: 10px; }
+      .calc-price .btn { width: 100%; margin-top: 18px !important; }
+
+      /* Карта цен */
+      .pm-tabs { gap: 6px; overflow-x: auto; flex-wrap: nowrap; justify-content: flex-start; padding-bottom: 4px; scrollbar-width: none; }
+      .pm-tabs::-webkit-scrollbar { display: none; }
+      .pm-tab { flex-shrink: 0; padding: 8px 14px; font-size: .68rem; }
+      .pm-grid { grid-template-columns: 1fr; gap: 8px; }
+      .pm-item { padding: 14px 16px; }
+      .pm-item strong { font-size: .84rem; }
+      .pm-item span { font-size: .86rem; }
+
+      /* Этапы */
+      .timeline { padding-left: 44px; }
+      .timeline-line { left: 12px; }
+      .tl-step { padding-bottom: 28px; }
+      .tl-dot { left: -36px; top: 4px; width: 16px; height: 16px; }
+      .tl-step .num { font-size: .64rem; margin-bottom: 4px; }
+      .tl-step h3 { font-size: .96rem; margin-bottom: 4px; }
+      .tl-step p { font-size: .84rem; }
+
+      /* Отзывы */
+      .reviews-grid { grid-template-columns: 1fr; gap: 12px; }
+      .review-card { padding: 22px 20px; }
+      .review-stars { font-size: .8rem; margin-bottom: 10px; }
+      .review-text { font-size: .88rem; margin-bottom: 16px; }
+      .review-author { font-size: .68rem; }
+
+      /* До / после */
+      .before-after { aspect-ratio: 4 / 3; border-radius: 12px; }
+      .ba-handle::after { width: 36px; height: 36px; }
+      .ba-labels { font-size: .64rem; margin-top: 10px; }
+
+      /* FAQ */
+      .faq-list { max-width: 100%; }
+      .faq-q { padding: 16px 0; font-size: .92rem; gap: 14px; line-height: 1.35; }
+      .faq-icon { width: 12px; height: 12px; }
+      .faq-a p { font-size: .86rem; padding-bottom: 16px; }
+
+      /* Контакты */
+      .contact-wrap { gap: 28px; }
+      .contact-info p { font-size: .9rem; margin-bottom: 22px; }
+      .contact-line { gap: 12px; margin-bottom: 18px; font-size: .88rem; }
+      .contact-line-icon { width: 36px; height: 36px; border-radius: 9px; }
+      .contact-line-icon svg { width: 15px; height: 15px; }
+      .contact-line small { font-size: .62rem; }
+
+      .form { padding: 22px 18px; border-radius: 14px; }
+      .form h3 { font-size: 1rem; }
+      .form-note { font-size: .78rem; margin-bottom: 18px; }
+      .timer-line { padding: 9px 12px; font-size: .72rem; margin-bottom: 16px; }
+      .form-group { margin-bottom: 14px; }
+      .form-group label { font-size: .64rem; margin-bottom: 5px; }
+      .form-group input,
+      .form-group textarea,
+      .form-group select {
+        padding: 12px 14px;
+        font-size: 16px;
+        border-radius: 8px;
+      }
+      .form-group textarea { min-height: 80px; }
+      .form-submit { padding: 14px 20px; font-size: .82rem; }
+
+      /* Карта */
+      .map-wrap { height: 320px; }
+      .map-overlay { top: 12px; left: 12px; padding: 10px 14px; font-size: .66rem; border-radius: 8px; }
+      .map-overlay strong { font-size: .6rem; }
+
+      /* Футер */
+      .footer { padding: 28px 0; }
+      .footer-inner { flex-direction: column; text-align: center; gap: 12px; font-size: .76rem; }
+
+      /* Плавающие кнопки */
+      .quick-fab { width: 44px; height: 44px; right: 16px; bottom: 70px; }
+      .quick-fab svg { width: 18px; height: 18px; }
+      .to-top { width: 40px; height: 40px; right: 16px; bottom: 16px; }
+      .to-top svg { width: 15px; height: 15px; }
+
+      /* Модалки */
+      .modal { padding: 12px; align-items: flex-end; }
+      .modal-inner { padding: 24px 20px; border-radius: 18px 18px 0 0; max-height: 92vh; }
+      .modal-inner h3 { font-size: 1.1rem; }
+      .modal-inner .muted { font-size: .82rem; margin-bottom: 18px; }
+      .modal-close { top: 14px; right: 14px; width: 34px; height: 34px; }
+
+      /* Страницы услуг */
+      .service-page { padding: 96px 0 40px; }
+      .service-page-back { font-size: .74rem; margin-bottom: 24px; }
+      .service-page h1 { font-size: clamp(1.6rem, 7vw, 2.2rem); margin-bottom: 14px; }
+      .service-page .lead { font-size: .94rem; margin-bottom: 22px; }
+      .service-hero-img { max-height: 240px; margin-bottom: 28px; border-radius: 12px; }
+      .service-page-meta { gap: 6px; margin-bottom: 24px; }
+      .meta-tag { padding: 6px 12px; font-size: .64rem; letter-spacing: .06em; }
+      .service-details { grid-template-columns: 1fr; gap: 22px; margin-bottom: 32px; }
+      .service-details h3 { font-size: .96rem; margin-bottom: 12px; }
+      .service-details ul li { font-size: .86rem; margin-bottom: 10px; gap: 10px; }
+      .service-cta { width: 100%; justify-content: center; padding: 14px 22px; font-size: .8rem; }
+      .share-btn { width: 100%; justify-content: center; margin-left: 0; margin-top: 10px; padding: 12px 16px; }
+      .recently { margin-top: 40px; padding-top: 22px; }
+      .recently h4 { font-size: .7rem; margin-bottom: 12px; }
+      .recently-list a { font-size: .74rem; padding: 7px 13px; }
+
+      /* Полноэкранное меню */
+      .site-menu__inner { padding: 84px 20px 28px; gap: 28px; }
+      .site-menu__top { padding-bottom: 18px; }
+      .site-menu__logo { font-size: .96rem; }
+      .site-menu__close { width: 40px; height: 40px; }
+      .site-menu__close svg { width: 16px; height: 16px; }
+      .site-menu__grid { grid-template-columns: 1fr; gap: 28px; }
+      .site-menu__label { font-size: .66rem; margin-bottom: 16px; padding-bottom: 10px; }
+      .site-menu__link { font-size: 1rem; padding: 12px 0; gap: 12px; line-height: 1.25; }
+      .site-menu__link::before { min-width: 20px; font-size: .62rem; }
+      .site-menu__list--secondary .site-menu__link { font-size: .9rem; padding: 10px 0; }
+      .site-menu__link .arrow { font-size: .95rem; }
+      .site-menu__footer { flex-direction: column; align-items: stretch; gap: 16px; padding-top: 22px; }
+      .site-menu__contact { font-size: .8rem; text-align: center; }
+      .site-menu__contact strong { font-size: .95rem; }
+      .site-menu__cta { width: 100%; text-align: center; padding: 14px 22px; }
+    }
+
+    @media (max-width: 480px) {
+      .container { width: calc(100% - 32px); }
+      .hero h1 { font-size: clamp(1.75rem, 10vw, 2.4rem); }
+      .hero p { font-size: .9rem; }
+      .hero-stat strong { font-size: 1.35rem; }
+      .section-title { font-size: clamp(1.5rem, 7vw, 1.9rem); }
+      .section-subtitle { font-size: .9rem; }
+      .filter-btn { padding: 7px 12px; font-size: .64rem; }
+      .quick-calc { padding: 6px 10px; font-size: .62rem; }
+      .review-card { padding: 20px 18px; }
+      .review-text { font-size: .84rem; }
+      .form { padding: 20px 16px; }
+      .calc { padding: 22px 16px; }
+      .calc-price strong { font-size: 1.7rem; }
+      .service-page h1 { font-size: clamp(1.4rem, 8vw, 1.9rem); }
+      .meta-tag { font-size: .6rem; padding: 5px 10px; }
+      .site-menu__link { font-size: .94rem; }
+      .site-menu__list--secondary .site-menu__link { font-size: .86rem; }
+    }
+
+    @media (max-width: 360px) {
+      .hero h1 { font-size: 1.6rem; }
+      .hero-stats { flex-direction: column; gap: 14px; }
+      .logo { font-size: .92rem; }
+      .menu-trigger { width: 40px; height: 40px; padding: 10px; }
+    }
+
+    @media (max-width: 900px) {
+      input, textarea, select { font-size: 16px !important; }
+    }
   </style>
 </head>
 <body>
@@ -942,9 +1160,6 @@
   <div class="cursor-dot" id="cursorDot"></div>
   <div class="cursor-ring" id="cursorRing"></div>
 
-  <!-- ========================================================= -->
-  <!-- ШАПКА — ЛОГО СЛЕВА, КНОПКИ ПО ЦЕНТРУ, ТЕЛЕФОН СПРАВА -->
-  <!-- ========================================================= -->
   <header class="header" id="header">
     <div class="container header-inner">
       <a href="#" class="logo" data-page-link="home">Detail<span>Studio</span></a>
@@ -973,9 +1188,6 @@
     </div>
   </header>
 
-  <!-- ========================================================= -->
-  <!-- ПОЛНОЭКРАННОЕ МЕНЮ -->
-  <!-- ========================================================= -->
   <div class="site-menu" id="siteMenu" role="dialog" aria-modal="true" aria-label="Меню сайта" aria-hidden="true">
     <div class="site-menu__inner">
       <div class="site-menu__top">
@@ -1029,12 +1241,8 @@
     </div>
   </div>
 
-  <!-- ========================================================= -->
-  <!-- ГЛАВНАЯ ===== -->
-  <!-- ========================================================= -->
   <main id="page-home" class="page-view active">
 
-    <!-- HERO С ВИДЕО-ФОНОМ -->
     <section class="hero" id="hero">
       <video class="hero-video" autoplay muted loop playsinline preload="auto">
         <source src="ef9ab565b86c437de33caa9a8c6649e4_720w.mp4" type="video/mp4">
@@ -1064,7 +1272,6 @@
       <div class="scroll-indicator" aria-hidden="true"></div>
     </section>
 
-    <!-- NUMBERS → БЕГУЩАЯ СТРОКА УСЛУГ -->
     <section class="numbers" id="numbers" aria-label="Наши услуги">
       <div class="numbers-ticker">
         <div class="ticker-track">
@@ -1096,7 +1303,6 @@
       </div>
     </section>
 
-    <!-- SERVICES -->
     <section class="section" id="services">
       <div class="container">
         <span class="eyebrow reveal"></span>
@@ -1310,7 +1516,6 @@
       </div>
     </section>
 
-    <!-- CALCULATOR -->
     <section class="section" id="calculator">
       <div class="container">
         <span class="eyebrow reveal"></span>
@@ -1364,7 +1569,6 @@
       </div>
     </section>
 
-    <!-- PRICE MAP -->
     <section class="section" id="pricemap">
       <div class="container">
         <span class="eyebrow reveal"></span>
@@ -1382,7 +1586,6 @@
       </div>
     </section>
 
-    <!-- PROCESS -->
     <section class="section" id="process">
       <div class="container">
         <span class="eyebrow reveal"></span>
@@ -1399,7 +1602,6 @@
       </div>
     </section>
 
-    <!-- REVIEWS -->
     <section class="section" id="reviews">
       <div class="container">
         <span class="eyebrow reveal"></span>
@@ -1413,7 +1615,6 @@
       </div>
     </section>
 
-    <!-- BEFORE / AFTER -->
     <section class="section" id="gallery">
       <div class="container">
         <span class="eyebrow reveal"></span>
@@ -1429,7 +1630,6 @@
       </div>
     </section>
 
-    <!-- FAQ -->
     <section class="section" id="faq">
       <div class="container">
         <span class="eyebrow reveal"></span>
@@ -1445,7 +1645,6 @@
       </div>
     </section>
 
-    <!-- CONTACT -->
     <section class="section" id="contact">
       <div class="container">
         <div class="contact-wrap">
@@ -1484,7 +1683,6 @@
       </div>
     </section>
 
-    <!-- MAP -->
     <section class="map-section" aria-label="Карта">
       <div class="map-wrap">
         <iframe title="Расположение детейлинг-центра" src="https://www.openstreetmap.org/export/embed.html?bbox=37.5900%2C55.7300%2C37.6300%2C55.7500&layer=mapnik&marker=55.7400%2C37.6100" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
@@ -1501,7 +1699,6 @@
     </footer>
   </main>
 
-  <!-- СТРАНИЦЫ УСЛУГ -->
   <main id="page-service-wash" class="page-view">
     <section class="service-page">
       <div class="container">
@@ -1757,9 +1954,7 @@
       const savedTheme = localStorage.getItem('detail-theme');
       if (savedTheme === 'light') document.documentElement.classList.add('light');
 
-      /* =====================================================
-         ПОЛНОЭКРАННОЕ МЕНЮ
-         ===================================================== */
+      /* МЕНЮ */
       const menuTrigger = document.getElementById('menuTrigger');
       const siteMenu = document.getElementById('siteMenu');
       const siteMenuClose = document.getElementById('siteMenuClose');
