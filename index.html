@@ -1,0 +1,2567 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lummar detailing</title>
+  <meta name="description" content="Детейлинг-центр: тонирование, бронирование, оклейка плёнками, полировка.">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #141416;
+      --bg-soft: #1a1a1c;
+      --bg-card: #202023;
+      --bg-elev: #26262a;
+      --text: #f2f2f2;
+      --text-muted: #9a9a9e;
+      --line: #2e2e32;
+      --line-strong: #44444a;
+      --radius: 16px;
+      --ease: cubic-bezier(.22,1,.36,1);
+      --ease-smooth: cubic-bezier(.16,1,.3,1);
+      --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    html.light {
+      --bg: #f6f6f7;
+      --bg-soft: #ececee;
+      --bg-card: #ffffff;
+      --bg-elev: #f0f0f2;
+      --text: #141416;
+      --text-muted: #5a5a5e;
+      --line: #dcdce0;
+      --line-strong: #b8b8be;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+      transition: background .5s var(--ease), color .5s var(--ease);
+    }
+
+    body.no-scroll { overflow: hidden; }
+
+    img { display: block; max-width: 100%; height: auto; }
+    a, a:hover, a:focus, .nav-pill__link, .site-menu__link { color: inherit; text-decoration: none !important; }
+    button, input, textarea, select { font: inherit; color: inherit; }
+    button { cursor: pointer; border: none; background: none; }
+    ul { list-style: none; }
+
+    .container { width: min(1180px, calc(100% - 40px)); margin-inline: auto; }
+    .section { padding: 100px 0; position: relative; }
+
+    /* ===== PRELOADER ===== */
+    .preloader {
+      position: fixed; inset: 0; background: var(--bg); z-index: 10000;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 24px;
+      transition: opacity .6s ease, visibility .6s ease;
+    }
+    .preloader.hidden { opacity: 0; visibility: hidden; }
+    .preloader-logo { font-size: 1.4rem; font-weight: 800; letter-spacing: .32em; text-transform: uppercase; animation: pulseLogo 1.5s ease-in-out infinite; }
+    @keyframes pulseLogo { 0%,100%{opacity:.6;letter-spacing:.3em} 50%{opacity:1;letter-spacing:.36em} }
+    .preloader-bar { width: 160px; height: 2px; background: var(--line); overflow: hidden; }
+    .preloader-bar::after { content:''; display:block; height:100%; width:40%; background: var(--text); animation: loadBar 1.1s ease-in-out infinite; }
+    @keyframes loadBar { 0%{transform:translateX(-100%)} 100%{transform:translateX(300%)} }
+
+    .scroll-progress { position: fixed; top: 0; left: 0; height: 2px; width: 0; background: var(--text); z-index: 1002; transition: width .1s linear; }
+
+    /* ===== CURSOR ===== */
+    .cursor-dot { position: fixed; top:0; left:0; width:7px; height:7px; background: var(--text); border-radius:50%; pointer-events:none; z-index:9999; transform: translate(-50%,-50%); transition: width .2s, height .2s, opacity .2s; }
+    .cursor-ring { position: fixed; top:0; left:0; width:34px; height:34px; border:1px solid var(--line-strong); border-radius:50%; pointer-events:none; z-index:9998; transform: translate(-50%,-50%); opacity:.6; transition: width .3s var(--ease), height .3s var(--ease), opacity .3s, border-color .3s; }
+    .cursor-ring.grow { width:56px; height:56px; opacity:1; border-color: var(--text); }
+    @media (hover: none) { .cursor-dot, .cursor-ring { display:none; } }
+
+    /* ===== TYPOGRAPHY ===== */
+    .section-title { font-size: clamp(1.9rem, 4vw, 3rem); line-height:1.12; font-weight:800; letter-spacing:-.025em; margin-bottom:14px; position:relative; display:inline-block; }
+    .section-title::after { content:''; position:absolute; left:0; bottom:-10px; width:0; height:2px; background:var(--text); transition: width 1s var(--ease) .15s; }
+    .section-title.visible::after { width:100%; }
+    .section-subtitle { color:var(--text-muted); max-width:600px; margin-bottom:52px; margin-top:22px; font-size:1.02rem; }
+    .eyebrow { display:inline-block; font-size:.72rem; letter-spacing:.18em; text-transform:uppercase; color:var(--text-muted); margin-bottom:14px; }
+
+    /* ===== BUTTONS ===== */
+    .btn { display:inline-flex; align-items:center; justify-content:center; gap:10px; padding:15px 30px; border-radius:999px; font-weight:600; font-size:.86rem; letter-spacing:.04em; text-transform:uppercase; border:1px solid transparent; position:relative; overflow:hidden; isolation:isolate; will-change:transform; transition: background .35s var(--ease), color .35s var(--ease), border-color .35s var(--ease), transform .35s var(--ease), box-shadow .35s var(--ease); }
+    .btn-primary { background:var(--text); color:var(--bg); border-color:var(--text); }
+    .btn-primary:hover { background:var(--bg); color:var(--text); box-shadow: 0 0 0 1px var(--text) inset; }
+    .btn-outline { background:transparent; color:var(--text); border-color:var(--line-strong); }
+    .btn-outline:hover { border-color:var(--text); background:var(--text); color:var(--bg); }
+    .btn .ripple { position:absolute; border-radius:50%; background:rgba(255,255,255,.35); transform:scale(0); animation: ripple .6s linear; pointer-events:none; z-index:-1; }
+    .btn-primary .ripple { background: rgba(0,0,0,.25); }
+    @keyframes ripple { to { transform: scale(4); opacity: 0; } }
+    .btn::before { content:''; position:absolute; inset:0; background: linear-gradient(90deg, transparent, rgba(255,255,255,.12), transparent); transform: translateX(-100%); transition: transform .7s ease; z-index:-1; }
+    .btn:hover::before { transform: translateX(100%); }
+
+    /* =========================================================
+       ШАПКА
+       ========================================================= */
+    .header {
+      position: fixed; inset: 0 0 auto 0; z-index: 1000;
+      padding: 18px 0;
+      transition: background .35s var(--ease), padding .35s var(--ease),
+                  backdrop-filter .35s var(--ease), box-shadow .35s var(--ease);
+      pointer-events: none;
+    }
+    .header.scrolled {
+      background: color-mix(in srgb, var(--bg) 80%, transparent);
+      backdrop-filter: blur(14px);
+      padding: 12px 0;
+      box-shadow: 0 1px 0 var(--line);
+    }
+    .header-inner {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 20px;
+      pointer-events: auto;
+      position: relative;
+      min-height: 46px;
+    }
+
+    .logo {
+      font-size: 1.18rem; font-weight: 800; letter-spacing: .08em;
+      text-transform: uppercase; white-space: nowrap;
+      transition: letter-spacing .35s var(--ease);
+      flex-shrink: 0;
+      position: relative;
+      z-index: 2;
+    }
+    .logo:hover { letter-spacing: .16em; }
+    .logo span { color: var(--text-muted); font-weight: 400; }
+
+    .header-actions {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      display: flex; align-items: center; gap: 10px;
+      z-index: 2;
+    }
+
+    .header-phone {
+      position: absolute;
+      right: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      font-weight: 600; font-size: .84rem;
+      white-space: nowrap;
+      padding: 0 4px;
+      border-bottom: 1px solid transparent;
+      transition: border-color .3s, color .3s;
+      display: inline-flex;
+      align-items: center;
+      height: 46px;
+      z-index: 2;
+    }
+    .header-phone:hover { border-color: var(--text); }
+
+    /* ===== ПИЛЮЛЯ ===== */
+    .nav-pill {
+      position: relative;
+      display: flex; align-items: center;
+      gap: 0;
+      height: 46px;
+      padding: 0 6px;
+      border-radius: 999px;
+      border: 1px solid var(--line-strong);
+      background: color-mix(in srgb, var(--bg) 55%, transparent);
+      backdrop-filter: blur(14px) saturate(140%);
+      -webkit-backdrop-filter: blur(14px) saturate(140%);
+      transition: background .5s var(--ease-smooth), border-color .5s var(--ease-smooth);
+      overflow: hidden;
+      isolation: isolate;
+    }
+
+    .nav-pill::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(120deg, transparent 30%, rgba(255,255,255,.06) 50%, transparent 70%);
+      transform: translateX(-100%);
+      transition: transform 1.2s var(--ease-smooth);
+      pointer-events: none;
+      z-index: -1;
+    }
+    .nav-pill:hover::before { transform: translateX(100%); }
+
+    .nav-pill__label {
+      display: flex; align-items: center; gap: 8px;
+      height: 100%;
+      padding: 0 18px;
+      font-size: .78rem;
+      font-weight: 600;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      white-space: nowrap;
+      transition: color .5s var(--ease-smooth), padding .6s var(--ease-smooth);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .nav-pill__label svg {
+      width: 14px; height: 14px;
+      stroke: currentColor; fill: none; stroke-width: 2;
+      transition: transform .6s var(--ease-smooth);
+    }
+    .nav-pill__label:hover { color: var(--text); }
+
+    .nav-pill__links {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      max-width: 0;
+      overflow: hidden;
+      opacity: 0;
+      transition:
+        max-width .95s var(--ease-smooth),
+        opacity .4s var(--ease-smooth) .05s;
+    }
+
+    .nav-pill__link {
+      display: inline-flex; align-items: center;
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-size: .78rem;
+      font-weight: 500;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      white-space: nowrap;
+      position: relative;
+      opacity: 0;
+      transform: translateY(4px);
+      transition:
+        color .3s var(--ease-smooth),
+        background .3s var(--ease-smooth),
+        opacity .45s var(--ease-smooth),
+        transform .55s var(--ease-smooth);
+    }
+    .nav-pill__link:hover { color: var(--text); background: color-mix(in srgb, var(--text) 6%, transparent); }
+    .nav-pill__link.active { color: var(--text); }
+
+    .nav-pill:hover .nav-pill__links,
+    .nav-pill:focus-within .nav-pill__links {
+      max-width: 700px;
+      opacity: 1;
+    }
+    .nav-pill:hover .nav-pill__link,
+    .nav-pill:focus-within .nav-pill__link {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .nav-pill:hover .nav-pill__link:nth-child(1),
+    .nav-pill:focus-within .nav-pill__link:nth-child(1) { transition-delay: .10s, 0s, .10s, .15s; }
+    .nav-pill:hover .nav-pill__link:nth-child(2),
+    .nav-pill:focus-within .nav-pill__link:nth-child(2) { transition-delay: .10s, 0s, .15s, .20s; }
+    .nav-pill:hover .nav-pill__link:nth-child(3),
+    .nav-pill:focus-within .nav-pill__link:nth-child(3) { transition-delay: .10s, 0s, .20s, .25s; }
+    .nav-pill:hover .nav-pill__link:nth-child(4),
+    .nav-pill:focus-within .nav-pill__link:nth-child(4) { transition-delay: .10s, 0s, .25s, .30s; }
+    .nav-pill:hover .nav-pill__link:nth-child(5),
+    .nav-pill:focus-within .nav-pill__link:nth-child(5) { transition-delay: .10s, 0s, .30s, .35s; }
+
+    .nav-pill:hover .nav-pill__label,
+    .nav-pill:focus-within .nav-pill__label {
+      padding: 0 10px 0 18px;
+      color: var(--text);
+    }
+    .nav-pill:hover .nav-pill__label svg,
+    .nav-pill:focus-within .nav-pill__label svg { transform: rotate(180deg); }
+
+    /* ===== БУРГЕР ===== */
+    .menu-trigger {
+      width: 46px; height: 46px;
+      border-radius: 50%;
+      border: 1px solid var(--line-strong);
+      background: color-mix(in srgb, var(--bg) 55%, transparent);
+      backdrop-filter: blur(14px) saturate(140%);
+      -webkit-backdrop-filter: blur(14px) saturate(140%);
+      display: flex; align-items: center; justify-content: center;
+      gap: 3px;
+      flex-wrap: wrap;
+      padding: 14px;
+      transition: background .3s, border-color .3s, transform .3s var(--ease);
+      z-index: 1100;
+      position: relative;
+    }
+    .menu-trigger:hover { background: var(--text); border-color: var(--text); transform: rotate(90deg); }
+
+    .menu-trigger span {
+      width: 4px; height: 4px;
+      border-radius: 50%;
+      background: var(--text);
+      transition: background .3s, transform .3s var(--ease);
+      display: block;
+    }
+    .menu-trigger:hover span { background: var(--bg); }
+
+    .menu-trigger.active { transform: rotate(90deg); }
+    .menu-trigger.active span:nth-child(1) { transform: translate(4px, 4px); }
+    .menu-trigger.active span:nth-child(2) { transform: translate(-4px, 4px); }
+    .menu-trigger.active span:nth-child(3) { transform: translate(4px, -4px); }
+    .menu-trigger.active span:nth-child(4) { transform: translate(-4px, -4px); }
+
+    @media (max-width: 1100px) {
+      .nav-pill__link { padding: 8px 10px; font-size: .74rem; }
+      .header-phone { display: none; }
+    }
+    @media (max-width: 900px) {
+      .nav-pill { display: none; }
+      .menu-trigger { width: 44px; height: 44px; padding: 12px; }
+      .header { padding: 14px 0; }
+      .header.scrolled { padding: 10px 0; }
+      .header-actions { gap: 8px; }
+    }
+
+    /* =========================================================
+       ПОЛНОЭКРАННОЕ МЕНЮ
+       ========================================================= */
+    .site-menu {
+      position: fixed; inset: 0; z-index: 1050;
+      background: var(--bg-soft);
+      color: var(--text);
+      opacity: 0; visibility: hidden;
+      transition: opacity .45s var(--ease), visibility .45s var(--ease);
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .site-menu.open { opacity: 1; visibility: visible; }
+
+    .site-menu__inner {
+      min-height: 100%;
+      padding: 100px 40px 40px;
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 48px;
+    }
+
+    .site-menu__top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--line);
+      opacity: 0;
+      transform: translateY(-12px);
+      transition: opacity .5s var(--ease) .15s, transform .5s var(--ease) .15s;
+    }
+    .site-menu.open .site-menu__top { opacity: 1; transform: translateY(0); }
+
+    .site-menu__logo {
+      font-size: 1.1rem;
+      font-weight: 800;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+    .site-menu__logo span { color: var(--text-muted); font-weight: 400; }
+
+    .site-menu__close {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      border: 1px solid var(--line-strong);
+      display: flex; align-items: center; justify-content: center;
+      transition: background .3s, border-color .3s, transform .3s var(--ease);
+    }
+    .site-menu__close:hover { background: var(--text); border-color: var(--text); transform: rotate(90deg); }
+    .site-menu__close svg { width: 18px; height: 18px; stroke: var(--text); stroke-width: 2; fill: none; transition: stroke .3s; }
+    .site-menu__close:hover svg { stroke: var(--bg); }
+
+    .site-menu__grid {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr;
+      gap: 60px;
+      flex: 1;
+    }
+
+    .site-menu__col { min-width: 0; }
+
+    .site-menu__label {
+      font-size: .72rem;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--line);
+      opacity: 0;
+      transform: translateY(-8px);
+      transition: opacity .4s var(--ease) .2s, transform .4s var(--ease) .2s;
+    }
+    .site-menu.open .site-menu__label { opacity: 1; transform: translateY(0); }
+
+    .site-menu__list { display: flex; flex-direction: column; counter-reset: mnu; }
+    .site-menu__item {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity .5s var(--ease), transform .5s var(--ease);
+    }
+    .site-menu.open .site-menu__item { opacity: 1; transform: translateY(0); }
+
+    .site-menu.open .site-menu__item:nth-child(1) { transition-delay: .22s; }
+    .site-menu.open .site-menu__item:nth-child(2) { transition-delay: .27s; }
+    .site-menu.open .site-menu__item:nth-child(3) { transition-delay: .32s; }
+    .site-menu.open .site-menu__item:nth-child(4) { transition-delay: .37s; }
+    .site-menu.open .site-menu__item:nth-child(5) { transition-delay: .42s; }
+    .site-menu.open .site-menu__item:nth-child(6) { transition-delay: .47s; }
+    .site-menu.open .site-menu__item:nth-child(7) { transition-delay: .52s; }
+    .site-menu.open .site-menu__item:nth-child(8) { transition-delay: .57s; }
+
+    .site-menu__link {
+      display: flex;
+      align-items: baseline;
+      gap: 16px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--line);
+      font-size: clamp(1.1rem, 2.2vw, 1.6rem);
+      font-weight: 700;
+      letter-spacing: -.02em;
+      line-height: 1.2;
+      color: var(--text);
+      transition: color .25s, padding-left .3s var(--ease);
+      counter-increment: mnu;
+    }
+    .site-menu__link::before {
+      content: counter(mnu, decimal-leading-zero);
+      font-size: .7rem;
+      font-weight: 600;
+      letter-spacing: .08em;
+      color: var(--text-muted);
+      flex-shrink: 0;
+      min-width: 24px;
+    }
+    .site-menu__link:hover { color: var(--text-muted); padding-left: 8px; }
+
+    .site-menu__link .arrow {
+      margin-left: auto;
+      font-size: 1.1rem;
+      opacity: .4;
+      transition: opacity .25s, transform .25s var(--ease);
+    }
+    .site-menu__link:hover .arrow { opacity: 1; transform: translateX(4px); }
+
+    .site-menu__list--secondary .site-menu__link {
+      font-size: clamp(1rem, 1.6vw, 1.2rem);
+      font-weight: 600;
+    }
+    .site-menu__list--secondary .site-menu__link::before { content: none; }
+    .site-menu__list--secondary .site-menu__item { counter-increment: none; }
+
+    .site-menu__footer {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 24px;
+      padding-top: 28px;
+      border-top: 1px solid var(--line);
+      opacity: 0;
+      transform: translateY(12px);
+      transition: opacity .5s var(--ease) .5s, transform .5s var(--ease) .5s;
+    }
+    .site-menu.open .site-menu__footer { opacity: 1; transform: translateY(0); }
+
+    .site-menu__contact {
+      font-size: .85rem;
+      color: var(--text-muted);
+      line-height: 1.7;
+    }
+    .site-menu__contact strong {
+      display: block;
+      color: var(--text);
+      font-size: 1rem;
+      margin-bottom: 2px;
+    }
+    .site-menu__contact a { border-bottom: 1px solid transparent; transition: border-color .3s; }
+    .site-menu__contact a:hover { border-color: var(--text); }
+
+    .site-menu__cta {
+      padding: 14px 28px;
+      border-radius: 999px;
+      background: var(--text);
+      color: var(--bg);
+      font-weight: 700;
+      font-size: .82rem;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      transition: transform .3s var(--ease), box-shadow .3s;
+    }
+    .site-menu__cta:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(255,255,255,.12); }
+
+    @media (max-width: 900px) {
+      .site-menu__inner { padding: 90px 24px 32px; gap: 36px; }
+      .site-menu__grid { grid-template-columns: 1fr; gap: 36px; }
+      .site-menu__link { font-size: 1.05rem; padding: 11px 0; }
+      .site-menu__link::before { min-width: 20px; font-size: .65rem; }
+      .site-menu__list--secondary .site-menu__link { font-size: .95rem; }
+      .site-menu__footer { flex-direction: column; align-items: flex-start; gap: 18px; }
+      .site-menu__cta { width: 100%; text-align: center; }
+    }
+
+    /* ===== HERO ===== */
+    .hero { min-height:100vh; display:flex; align-items:center; position:relative; overflow:hidden; padding-top:120px; padding-bottom:80px; }
+    .hero-bg { position:absolute; inset:0; z-index:-2; overflow:hidden; }
+    .hero-bg::before { content:''; position:absolute; inset:-50%; background-image: linear-gradient(to right, color-mix(in srgb, var(--text) 5%, transparent) 1px, transparent 1px), linear-gradient(to bottom, color-mix(in srgb, var(--text) 5%, transparent) 1px, transparent 1px); background-size:64px 64px; animation: gridMove 32s linear infinite; }
+    @keyframes gridMove { from{transform:translate(0,0)} to{transform:translate(64px,64px)} }
+    .hero-glow { position:absolute; top:-20%; right:-10%; width:70vw; height:70vw; max-width:900px; max-height:900px; background: radial-gradient(circle, color-mix(in srgb, var(--text) 7%, transparent) 0%, transparent 65%); z-index:-1; animation: pulseGlow 9s ease-in-out infinite; pointer-events:none; transition: transform .5s ease-out; }
+    @keyframes pulseGlow { 0%,100%{opacity:.55;transform:scale(1)} 50%{opacity:.9;transform:scale(1.06)} }
+
+    .hero-video {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      z-index: -3;
+      pointer-events: none;
+      filter: grayscale(1) brightness(.85) contrast(1.05);
+    }
+    .hero-video-overlay {
+      position: absolute; inset: 0;
+      z-index: -2;
+      pointer-events: none;
+      background: linear-gradient(180deg, rgba(10,10,12,.82) 0%, rgba(10,10,12,.58) 45%, rgba(10,10,12,.88) 100%);
+      transition: background .5s var(--ease);
+    }
+    html.light .hero-video-overlay {
+      background: linear-gradient(180deg, rgba(246,246,247,.88) 0%, rgba(246,246,247,.62) 45%, rgba(246,246,247,.92) 100%);
+    }
+    .hero-bg { z-index: -1; }
+    .hero-glow { z-index: 0; }
+
+    .hero-content { max-width: 1120px; width: 100%; margin-inline: auto; position:relative; z-index: 2; text-align: center; }
+    .hero-badge { display:none; display:inline-flex; align-items:center; gap:10px; padding:7px 16px; border:1px solid var(--line-strong); border-radius:999px; font-size:.7rem; letter-spacing:.16em; text-transform:uppercase; color:var(--text-muted); margin-bottom:28px; animation: fadeUp .7s var(--ease) both; }
+    .hero-badge::before { content:''; width:5px; height:5px; border-radius:50%; background:var(--text); animation: blink 2.4s ease-in-out infinite; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.15} }
+    .hero h1 { font-size: clamp(3.2rem, 8.2vw, 7.4rem); line-height:.98; font-weight:850; letter-spacing:-.055em; margin: 0 auto 30px; max-width: 1120px; text-wrap: balance; }
+    .hero h1 .line { display: block; overflow: hidden; }
+    .hero h1 .line span { display: inline-block; transform: translateY(100%); animation: lineIn .9s var(--ease) forwards; }
+    .hero h1 .line:nth-child(1) span { animation-delay: .1s; }
+    .hero h1 .line:nth-child(2) span { animation-delay: .25s; }
+    .hero h1 .accent { position: relative; }
+    .hero h1 .accent::after { display: none !important; }
+    @keyframes lineIn { to { transform: translateY(0); } }
+    @keyframes underline { to { transform: scaleX(1); } }
+    .hero p { color:var(--text-muted); font-size: clamp(1rem, 1.5vw, 1.2rem); max-width:680px; margin: 0 auto 36px; animation: fadeUp .7s var(--ease) .35s both; }
+    .hero-actions { display:flex; flex-wrap:wrap; justify-content:center; gap:14px; animation: fadeUp .7s var(--ease) .45s both; }
+    .hero-stats { display:flex; flex-wrap:wrap; justify-content:center; gap: clamp(28px, 6vw, 76px); margin:56px auto 0; padding-top:30px; border-top:1px solid var(--line); max-width:760px; animation: fadeUp .7s var(--ease) .55s both; }
+    .hero-stat strong { display:block; font-size:1.9rem; font-weight:800; letter-spacing:-.02em; line-height:1.1; }
+    .hero-stat span { font-size:.76rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:.08em; }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+    .scroll-indicator { position:absolute; bottom:26px; left:50%; transform:translateX(-50%); width:22px; height:36px; border:1px solid var(--line-strong); border-radius:12px; display:flex; justify-content:center; padding-top:7px; animation: fadeUp .7s var(--ease) 1.1s both; z-index: 2; }
+    .scroll-indicator::after { content:''; width:3px; height:8px; background:var(--text); border-radius:2px; animation: scrollDot 1.9s ease-in-out infinite; }
+    @keyframes scrollDot { 0%,100%{transform:translateY(0);opacity:1} 50%{transform:translateY(9px);opacity:.25} }
+
+    /* ===== NUMBERS ===== */
+    .numbers {
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      padding: 0;
+      overflow: hidden;
+    }
+    .numbers-ticker {
+      position: relative;
+      overflow: hidden;
+      user-select: none;
+      -webkit-user-select: none;
+      padding: 22px 0;
+      background: transparent;
+    }
+    .numbers-ticker .ticker-track {
+      display: flex;
+      width: max-content;
+      animation: numbersTicker 40s linear infinite;
+      will-change: transform;
+    }
+    .numbers-ticker:hover .ticker-track { animation-play-state: paused; }
+    .numbers-ticker .ticker-group { display: flex; align-items: center; flex-shrink: 0; }
+    .numbers-ticker .ticker-item {
+      display: inline-flex; align-items: center; gap: 28px; padding: 0 28px;
+      font-family: var(--font); font-size: clamp(1rem, 1.6vw, 1.35rem);
+      font-weight: 700; letter-spacing: 0.02em; text-transform: uppercase;
+      white-space: nowrap; line-height: 1.1; color: var(--text);
+    }
+    .numbers-ticker .ticker-item::after { content: '◆'; font-size: 0.6em; opacity: 0.5; color: var(--text-muted); }
+    @keyframes numbersTicker { from { transform: translate3d(0, 0, 0); } to { transform: translate3d(-50%, 0, 0); } }
+    @media (max-width: 768px) {
+      .numbers-ticker { padding: 16px 0; }
+      .numbers-ticker .ticker-item { font-size: 0.85rem; padding: 0 18px; gap: 18px; }
+    }
+    @media (prefers-reduced-motion: reduce) { .numbers-ticker .ticker-track { animation: none; } }
+
+    /* ===== FILTER + COMPARE ===== */
+    .filter-bar { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; align-items: center; justify-content: space-between; }
+    .filter-tabs { display: flex; flex-wrap: wrap; gap: 8px; }
+    .filter-btn { padding: 9px 20px; border: 1px solid var(--line); border-radius: 999px; font-size: .76rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--text-muted); transition: all .3s var(--ease); }
+    .filter-btn:hover { border-color: var(--line-strong); color: var(--text); }
+    .filter-btn.active { background: var(--text); color: var(--bg); border-color: var(--text); }
+
+    .compare-toggle {
+      padding: 10px 20px; border-radius: 999px; border: 1px solid var(--line-strong);
+      font-size: .76rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+      display: inline-flex; align-items: center; gap: 8px; transition: all .3s var(--ease);
+    }
+    .compare-toggle:hover { border-color: var(--text); }
+    .compare-toggle.has-items { background: var(--text); color: var(--bg); border-color: var(--text); }
+    .compare-count { display: inline-flex; align-items: center; justify-content: center; min-width: 20px; height: 20px; border-radius: 10px; background: rgba(255,255,255,.15); padding: 0 6px; font-size: .7rem; }
+    .compare-toggle.has-items .compare-count { background: rgba(0,0,0,.2); }
+
+    /* ===== SERVICES ===== */
+    .services-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+
+    .service-card {
+      position: relative; background: var(--bg-card); border-radius: var(--radius);
+      border: 1px solid var(--line); overflow: hidden;
+      display: flex; flex-direction: column;
+      transition: transform .6s var(--ease), border-color .4s, box-shadow .6s, opacity .4s;
+      will-change: transform;
+      opacity: 0; transform: translateY(40px) rotateX(8deg) scale(.96); transform-origin: center bottom;
+    }
+    .service-card.visible { opacity: 1; transform: translateY(0) rotateX(0) scale(1); }
+    .service-card.hidden-filter { display: none; }
+    .service-card:hover { border-color: var(--line-strong); transform: translateY(-6px); box-shadow: 0 24px 50px rgba(0,0,0,.5); }
+    html.light .service-card:hover { box-shadow: 0 24px 50px rgba(0,0,0,.08); }
+    .service-card.selected { border-color: var(--text); }
+
+    .service-media { position: relative; aspect-ratio: 16 / 10; overflow: hidden; background: #000; }
+    .service-media img {
+      width: 100%; height: 100%; object-fit: cover;
+      filter: grayscale(1) brightness(.72);
+      transition: transform 1s var(--ease), filter .6s ease;
+      will-change: transform;
+    }
+    .service-card:hover .service-media img { transform: scale(1.06); filter: grayscale(.4) brightness(.9); }
+    .service-media::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, var(--bg-card) 0%, transparent 60%); pointer-events: none; }
+
+    .service-icon {
+      position: absolute; left: 20px; bottom: 16px; z-index: 2;
+      width: 44px; height: 44px; border-radius: 10px;
+      border: 1px solid rgba(255,255,255,.25);
+      background: rgba(0,0,0,.55); backdrop-filter: blur(6px);
+      display: flex; align-items: center; justify-content: center;
+      transition: background .3s, border-color .3s, transform .6s var(--ease);
+    }
+    .service-card:hover .service-icon { background: #fff; border-color: #fff; transform: rotate(-6deg) scale(1.05); }
+    .service-icon svg { width: 20px; height: 20px; stroke: #fff; fill: none; stroke-width: 1.6; transition: stroke .3s; }
+    .service-card:hover .service-icon svg { stroke: #000; }
+
+    .card-actions { position: absolute; top: 12px; right: 12px; z-index: 3; display: flex; gap: 6px; }
+    .fav-btn, .compare-check {
+      width: 34px; height: 34px; border-radius: 50%;
+      border: 1px solid rgba(255,255,255,.25);
+      background: rgba(0,0,0,.5); backdrop-filter: blur(6px);
+      display: flex; align-items: center; justify-content: center;
+      transition: all .3s var(--ease);
+    }
+    .fav-btn:hover, .compare-check:hover { border-color: #fff; }
+    .fav-btn svg { width: 15px; height: 15px; fill: none; stroke: #fff; stroke-width: 1.8; transition: fill .3s, stroke .3s; }
+    .fav-btn.active { background: #fff; border-color: #fff; }
+    .fav-btn.active svg { fill: #000; stroke: #000; }
+    .compare-check svg { width: 15px; height: 15px; stroke: #fff; fill: none; stroke-width: 2; opacity: .3; transition: opacity .3s; }
+    .compare-check.active { background: #fff; border-color: #fff; }
+    .compare-check.active svg { stroke: #000; opacity: 1; }
+
+    .service-body { padding: 20px 24px 26px; display: flex; flex-direction: column; flex: 1; }
+    .service-body h3 { font-size: 1.05rem; margin-bottom: 8px; font-weight: 700; line-height: 1.35; }
+    .service-body p { color: var(--text-muted); font-size: .86rem; flex: 1; margin-bottom: 16px; }
+    .service-footer { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: auto; }
+    .service-link { display: inline-flex; align-items: center; gap: 6px; font-size: .74rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--text-muted); transition: color .3s, gap .3s var(--ease); }
+    .service-link:hover { color: var(--text); gap: 12px; }
+    .service-link span { transition: transform .3s var(--ease); }
+    .service-link:hover span { transform: translateX(3px); }
+    .service-card:nth-child(1){transition-delay:0s}
+    .service-card:nth-child(2){transition-delay:.06s}
+    .service-card:nth-child(3){transition-delay:.12s}
+    .service-card:nth-child(4){transition-delay:.18s}
+    .service-card:nth-child(5){transition-delay:.24s}
+    .service-card:nth-child(6){transition-delay:.3s}
+    .service-card:nth-child(7){transition-delay:.36s}
+    .service-card:nth-child(8){transition-delay:.42s}
+
+    /* ===== WHY ===== */
+    .why-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+    .why-item { padding:30px 26px; border-radius: var(--radius); background: var(--bg-soft); border:1px solid var(--line); transition: transform .4s var(--ease), border-color .4s; }
+    .why-item:hover { transform: translateY(-4px); border-color: var(--line-strong); }
+    .why-item .num { display:block; font-size:1.4rem; font-weight:800; color: var(--line-strong); line-height:1; margin-bottom:16px; transition: color .4s; }
+    .why-item:hover .num { color: var(--text); }
+    .why-item h3 { font-size:1rem; margin-bottom:8px; font-weight:700; }
+    .why-item p { color: var(--text-muted); font-size:.87rem; }
+
+    /* ===== TIMELINE ===== */
+    .timeline { position: relative; max-width: 820px; margin: 0 auto; padding-left: 56px; }
+    .timeline-line { position: absolute; left: 18px; top: 0; bottom: 0; width: 2px; background: var(--line); }
+    .timeline-line::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: var(--fill, 0%); background: var(--text); transition: height .15s linear; }
+    .tl-step { position: relative; padding-bottom: 40px; }
+    .tl-step:last-child { padding-bottom: 0; }
+    .tl-dot { position: absolute; left: -46px; top: 4px; width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--line-strong); background: var(--bg); transition: background .4s, border-color .4s, transform .4s var(--ease); }
+    .tl-step.active .tl-dot { background: var(--text); border-color: var(--text); transform: scale(1.1); }
+    .tl-step .num { font-size: .7rem; letter-spacing: .16em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; }
+    .tl-step h3 { font-size: 1.05rem; margin-bottom: 5px; font-weight: 700; }
+    .tl-step p { color: var(--text-muted); font-size: .9rem; max-width: 540px; }
+
+    .calc { background: var(--bg-card); border: 1px solid var(--line); border-radius: var(--radius); padding: 38px 34px; display: grid; grid-template-columns: 1fr 1fr; gap: 36px; max-width: 900px; margin: 0 auto; transition: border-color .3s, box-shadow .4s; }
+    .calc.highlight { border-color: var(--text); box-shadow: 0 0 0 1px var(--text) inset, 0 20px 60px rgba(0,0,0,.4); animation: calcPulse .8s var(--ease); }
+    @keyframes calcPulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.01)} }
+    .calc h3 { font-size: 1.1rem; margin-bottom: 6px; font-weight: 700; }
+    .calc > div > p { color: var(--text-muted); font-size: .87rem; margin-bottom: 22px; }
+    .calc-field { margin-bottom: 18px; }
+    .calc-field label { display:block; font-size:.7rem; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--text-muted); margin-bottom:7px; }
+    .calc-field select { width:100%; padding:12px 14px; background: var(--bg-soft); border:1px solid var(--line); border-radius:10px; outline:none; transition: border-color .3s, background .3s; }
+    .calc-field select:focus { border-color: var(--text); background: var(--bg); }
+    .calc-price { display: flex; flex-direction: column; justify-content: center; align-items: flex-start; border-left: 1px solid var(--line); padding-left: 36px; }
+    .calc-price small { font-size: .7rem; letter-spacing: .14em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; }
+    .calc-price strong { font-size: clamp(2rem, 4vw, 2.8rem); font-weight: 800; letter-spacing: -.02em; line-height: 1; transition: opacity .2s; }
+    .calc-price .note { font-size: .76rem; color: var(--text-muted); margin-top: 12px; }
+
+    /* ===== PRICE MAP ===== */
+    .price-map { max-width: 900px; margin: 0 auto; }
+    .pm-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; justify-content: center; }
+    .pm-tab { padding: 9px 18px; border-radius: 999px; border: 1px solid var(--line); font-size: .74rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--text-muted); transition: all .3s var(--ease); }
+    .pm-tab:hover { border-color: var(--line-strong); color: var(--text); }
+    .pm-tab.active { background: var(--text); color: var(--bg); border-color: var(--text); }
+    .pm-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
+    .pm-item { padding: 18px 20px; border: 1px solid var(--line); border-radius: 12px; display: flex; justify-content: space-between; align-items: center; gap: 16px; transition: border-color .3s, transform .3s var(--ease), background .3s; }
+    .pm-item:hover { border-color: var(--line-strong); transform: translateY(-2px); background: var(--bg-soft); }
+    .pm-item strong { font-size: .9rem; font-weight: 600; }
+    .pm-item span { font-weight: 700; font-size: .92rem; }
+
+    /* ===== REVIEWS ===== */
+    .reviews-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+    .review-card { background: var(--bg-card); border: 1px solid var(--line); border-radius: var(--radius); padding: 28px 26px; display: flex; flex-direction: column; transition: transform .4s var(--ease), border-color .4s, box-shadow .4s; }
+    .review-card:hover { transform: translateY(-4px); border-color: var(--line-strong); box-shadow: 0 20px 40px rgba(0,0,0,.3); }
+    .review-stars { color: var(--text); letter-spacing: 3px; font-size: .85rem; margin-bottom: 14px; }
+    .review-text { font-size: .94rem; line-height: 1.65; margin-bottom: 20px; flex: 1; }
+    .review-author { font-size: .72rem; letter-spacing: .12em; text-transform: uppercase; color: var(--text-muted); }
+
+    /* ===== FAQ ===== */
+    .faq-list { max-width: 820px; margin: 0 auto; }
+    .faq-item { border-bottom: 1px solid var(--line); }
+    .faq-q { width: 100%; display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 20px 0; text-align: left; font-size: .98rem; font-weight: 600; transition: color .3s; }
+    .faq-q:hover { color: var(--text-muted); }
+    .faq-icon { position: relative; width: 14px; height: 14px; flex-shrink: 0; }
+    .faq-icon::before, .faq-icon::after { content: ''; position: absolute; background: var(--text); transition: transform .3s var(--ease); }
+    .faq-icon::before { top: 50%; left: 0; width: 100%; height: 1.5px; transform: translateY(-50%); }
+    .faq-icon::after { left: 50%; top: 0; height: 100%; width: 1.5px; transform: translateX(-50%); }
+    .faq-item.open .faq-icon::after { transform: translateX(-50%) rotate(90deg); }
+    .faq-a { max-height: 0; overflow: hidden; transition: max-height .4s var(--ease); }
+    .faq-a p { padding-bottom: 20px; color: var(--text-muted); font-size: .91rem; max-width: 680px; }
+
+    /* ===== CONTACT ===== */
+    .contact-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 44px; align-items: start; }
+    .contact-info p { color: var(--text-muted); margin-bottom: 28px; }
+    .contact-line { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 22px; font-size: .93rem; transition: transform .3s var(--ease); }
+    .contact-line:hover { transform: translateX(4px); }
+    .contact-line-icon { width: 40px; height: 40px; border-radius: 10px; background: var(--bg-card); border: 1px solid var(--line); display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: background .3s, border-color .3s; }
+    .contact-line-icon svg { width: 17px; height: 17px; stroke: var(--text); fill: none; stroke-width: 1.5; transition: stroke .3s; }
+    .contact-line:hover .contact-line-icon { background: var(--text); border-color: var(--text); }
+    .contact-line:hover .contact-line-icon svg { stroke: var(--bg); }
+    .contact-line small { display: block; color: var(--text-muted); font-size: .68rem; text-transform: uppercase; letter-spacing: .12em; margin-bottom: 2px; }
+
+    .form { background: var(--bg-card); border: 1px solid var(--line); border-radius: var(--radius); padding: 34px 30px; transition: border-color .3s; }
+    .form:focus-within { border-color: var(--line-strong); }
+    .form h3 { font-size: 1.1rem; margin-bottom: 4px; font-weight: 700; }
+    .form-note { color: var(--text-muted); font-size: .83rem; margin-bottom: 22px; }
+    .timer-line { display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: var(--bg-soft); border: 1px solid var(--line); border-radius: 8px; margin-bottom: 20px; font-size: .78rem; color: var(--text-muted); }
+    .timer-line strong { color: var(--text); font-weight: 700; font-variant-numeric: tabular-nums; }
+    .timer-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--text); animation: blink 1.4s ease-in-out infinite; }
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; font-size: .7rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; }
+    .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 13px 15px; background: var(--bg-soft); border: 1px solid var(--line); border-radius: 9px; outline: none; transition: border-color .3s, background .3s; }
+    .form-group input:focus, .form-group textarea:focus, .form-group select:focus { border-color: var(--text); background: var(--bg); }
+    .form-group textarea { min-height: 90px; resize: vertical; }
+    .form-error { color: var(--text); font-size: .72rem; margin-top: 4px; display: none; opacity: .7; }
+    .form-group.invalid input, .form-group.invalid textarea { border-color: var(--text); }
+    .form-group.invalid .form-error { display: block; }
+    .form-submit { width: 100%; margin-top: 4px; }
+    .form-success { display: none; padding: 14px; border-radius: 9px; background: var(--text); color: var(--bg); font-size: .85rem; text-align: center; margin-top: 14px; font-weight: 600; animation: fadeUp .4s var(--ease); }
+
+    /* ===== MAP ===== */
+    .map-section { padding: 0; }
+    .map-wrap { position: relative; width: 100%; height: 440px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); filter: grayscale(1) contrast(1.1); transition: filter .5s; }
+    .map-wrap:hover { filter: grayscale(1) contrast(1.1) brightness(1.08); }
+    .map-wrap iframe { width: 100%; height: 100%; border: 0; display: block; }
+    .map-overlay { position: absolute; top: 24px; left: 24px; background: color-mix(in srgb, var(--bg) 90%, transparent); backdrop-filter: blur(10px); border: 1px solid var(--line-strong); border-radius: 10px; padding: 14px 20px; font-size: .8rem; letter-spacing: .05em; text-transform: uppercase; pointer-events: none; }
+    .map-overlay strong { display: block; font-size: .68rem; color: var(--text-muted); letter-spacing: .14em; margin-bottom: 3px; font-weight: 500; }
+
+    /* ===== FOOTER ===== */
+    .footer { padding: 40px 0; border-top: 1px solid var(--line); }
+    .footer-inner { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 18px; font-size: .8rem; color: var(--text-muted); }
+    .footer-inner a { transition: color .3s; }
+    .footer-inner a:hover { color: var(--text); }
+
+    /* ===== REVEAL ===== */
+    .reveal { opacity: 0; transform: translateY(28px); transition: opacity .8s var(--ease), transform .8s var(--ease); }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-left { transform: translateX(-30px); }
+    .reveal-right { transform: translateX(30px); }
+    .reveal-left.visible, .reveal-right.visible { transform: translateX(0); }
+
+    /* ===== BACK TO TOP ===== */
+    .to-top { position: fixed; right: 22px; bottom: 22px; width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--line-strong); background: color-mix(in srgb, var(--bg) 90%, transparent); backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: center; z-index: 900; opacity: 0; visibility: hidden; transform: translateY(12px); transition: opacity .3s, transform .3s, visibility .3s, background .3s; }
+    .to-top.visible { opacity: 1; visibility: visible; transform: translateY(0); }
+    .to-top:hover { background: var(--text); }
+    .to-top svg { width: 17px; height: 17px; stroke: var(--text); fill: none; stroke-width: 2; transition: stroke .3s; }
+    .to-top:hover svg { stroke: var(--bg); }
+
+    /* ===== QUICK ORDER FAB ===== */
+    .quick-fab { position: fixed; right: 22px; bottom: 78px; width: 48px; height: 48px; border-radius: 50%; background: var(--text); display: flex; align-items: center; justify-content: center; z-index: 900; box-shadow: 0 8px 24px rgba(0,0,0,.45); transition: transform .3s var(--ease); }
+    .quick-fab:hover { transform: scale(1.08); }
+    .quick-fab svg { width: 20px; height: 20px; stroke: var(--bg); fill: none; stroke-width: 2; }
+
+    /* ===== MODAL ===== */
+    .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,.7); backdrop-filter: blur(4px); z-index: 9500; opacity: 0; visibility: hidden; transition: opacity .3s, visibility .3s; }
+    .modal-backdrop.open { opacity: 1; visibility: visible; }
+    .modal {
+      position: fixed; inset: 0; z-index: 9600; display: flex; align-items: center; justify-content: center; padding: 20px;
+      opacity: 0; visibility: hidden; transition: opacity .3s, visibility .3s;
+    }
+    .modal.open { opacity: 1; visibility: visible; }
+    .modal-inner {
+      background: var(--bg-card); border: 1px solid var(--line-strong); border-radius: var(--radius);
+      max-width: 560px; width: 100%; max-height: 90vh; overflow-y: auto; padding: 32px;
+      transform: scale(.9) translateY(20px); transition: transform .4s var(--ease);
+      position: relative;
+    }
+    .modal.open .modal-inner { transform: scale(1) translateY(0); }
+    .modal-inner h3 { font-size: 1.3rem; margin-bottom: 8px; font-weight: 800; }
+    .modal-inner .muted { color: var(--text-muted); font-size: .88rem; margin-bottom: 22px; }
+    .modal-close { position: absolute; top: 20px; right: 20px; width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--line-strong); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; transition: background .3s, transform .3s; z-index: 9601; }
+    .modal-close:hover { background: var(--text); color: var(--bg); transform: rotate(90deg); }
+    .quick-form .form-group { margin-bottom: 14px; }
+
+    .compare-table { width: 100%; border-collapse: collapse; font-size: .86rem; }
+    .compare-table th, .compare-table td { padding: 12px 10px; text-align: left; border-bottom: 1px solid var(--line); }
+    .compare-table th { font-size: .7rem; letter-spacing: .1em; text-transform: uppercase; color: var(--text-muted); font-weight: 600; }
+    .compare-table tr:last-child td { border-bottom: none; }
+
+    /* ===== СТРАНИЦЫ УСЛУГ ===== */
+    .page-view { display: none; animation: pageIn .5s var(--ease); }
+    .page-view.active { display: block; }
+    @keyframes pageIn { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+
+    .service-page { padding: 130px 0 70px; min-height: 100vh; }
+    .service-page-back { display: inline-flex; align-items: center; gap: 8px; font-size: .78rem; letter-spacing: .08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 36px; transition: color .3s, gap .3s var(--ease); padding-bottom: 3px; border-bottom: 1px solid transparent; }
+    .service-page-back:hover { color: var(--text); gap: 14px; border-color: var(--text); }
+    .service-page h1 { font-size: clamp(2rem, 5vw, 3.2rem); font-weight: 800; letter-spacing: -.03em; line-height: 1.08; margin-bottom: 18px; }
+    .service-page .lead { color: var(--text-muted); font-size: 1.05rem; max-width: 720px; margin-bottom: 26px; }
+    .service-hero-img { width: 100%; max-height: 440px; object-fit: cover; border-radius: var(--radius); filter: grayscale(1); margin-bottom: 44px; border: 1px solid var(--line); }
+
+    .service-page-meta { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 36px; }
+    .meta-tag { padding: 7px 15px; border-radius: 999px; border: 1px solid var(--line-strong); font-size: .7rem; letter-spacing: .1em; text-transform: uppercase; color: var(--text-muted); }
+
+    .service-details { display: grid; grid-template-columns: 1fr 1fr; gap: 44px; margin-bottom: 50px; }
+    .service-details h3 { font-size: 1.02rem; margin-bottom: 16px; font-weight: 700; }
+    .service-details ul li { display: flex; align-items: flex-start; gap: 11px; margin-bottom: 12px; font-size: .9rem; color: var(--text-muted); }
+    .service-details ul li::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: var(--text); flex-shrink: 0; margin-top: 8px; }
+
+    .service-cta { display: inline-flex; align-items: center; gap: 10px; padding: 16px 32px; background: var(--text); color: var(--bg); border-radius: 999px; font-weight: 700; font-size: .86rem; letter-spacing: .04em; text-transform: uppercase; transition: transform .3s var(--ease), box-shadow .3s; }
+    .service-cta:hover { transform: translateY(-2px); box-shadow: 0 14px 34px rgba(255,255,255,.12); }
+    .share-btn { display: inline-flex; align-items: center; gap: 8px; padding: 9px 16px; border-radius: 999px; border: 1px solid var(--line-strong); font-size: .74rem; letter-spacing: .06em; text-transform: uppercase; color: var(--text-muted); transition: all .3s; margin-left: 10px; }
+    .share-btn:hover { border-color: var(--text); color: var(--text); }
+
+    .recently { margin-top: 60px; padding-top: 30px; border-top: 1px solid var(--line); }
+    .recently h4 { font-size: .76rem; letter-spacing: .14em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 16px; }
+    .recently-list { display: flex; flex-wrap: wrap; gap: 8px; }
+    .recently-list a { padding: 8px 16px; border-radius: 999px; border: 1px solid var(--line); font-size: .78rem; color: var(--text-muted); transition: all .3s; }
+    .recently-list a:hover { border-color: var(--text); color: var(--text); }
+
+    /* =========================================================
+       ДОПОЛНИТЕЛЬНЫЕ АНИМАЦИИ
+       ========================================================= */
+
+    .service-card:hover .service-icon svg {
+      animation: iconWiggle 0.6s var(--ease-smooth);
+    }
+    @keyframes iconWiggle {
+      0%, 100% { transform: rotate(0deg); }
+      25% { transform: rotate(-8deg); }
+      75% { transform: rotate(8deg); }
+    }
+
+    .quick-fab {
+      animation: floatPulse 3s ease-in-out infinite;
+    }
+    @keyframes floatPulse {
+      0%, 100% { box-shadow: 0 8px 24px rgba(0,0,0,.45), 0 0 0 0 color-mix(in srgb, var(--text) 40%, transparent); }
+      50% { box-shadow: 0 8px 24px rgba(0,0,0,.45), 0 0 0 14px transparent; }
+    }
+
+    .menu-trigger:hover span:nth-child(1) { transform: translate(-1px, -1px); }
+    .menu-trigger:hover span:nth-child(2) { transform: translate(1px, -1px); }
+    .menu-trigger:hover span:nth-child(3) { transform: translate(-1px, 1px); }
+    .menu-trigger:hover span:nth-child(4) { transform: translate(1px, 1px); }
+
+    @media (max-width: 900px) {
+      #contact .contact-line {
+        transition: opacity .5s var(--ease), transform .5s var(--ease), background .3s, border-color .3s;
+      }
+      #contact .contact-info.visible .contact-line:nth-of-type(1) { transition-delay: .1s; }
+      #contact .contact-info.visible .contact-line:nth-of-type(2) { transition-delay: .18s; }
+      #contact .contact-info.visible .contact-line:nth-of-type(3) { transition-delay: .26s; }
+    }
+
+    @media (max-width: 900px) {
+      html, body { overflow-x: hidden; max-width: 100vw; }
+      #contact.section { padding: 48px 0 60px; }
+      #contact .container { width: 100%; max-width: 100%; padding-left: 16px; padding-right: 16px; margin: 0; }
+      #contact .contact-wrap { display: flex; flex-direction: column; gap: 24px; width: 100%; }
+      #contact .contact-info { display: flex; flex-direction: column; align-items: flex-start; width: 100%; }
+      #contact .contact-info .eyebrow { display: none; }
+      #contact .contact-info .section-title { font-size: clamp(1.6rem, 7vw, 2rem); line-height: 1.15; margin-bottom: 16px; width: 100%; }
+      #contact .contact-info > p { font-size: .9rem; line-height: 1.5; margin-bottom: 24px; width: 100%; }
+      #contact .contact-line {
+        display: flex !important; flex-direction: row !important; align-items: center !important;
+        width: 100% !important; padding: 14px 16px; margin-bottom: 10px;
+        background: var(--bg-card); border: 1px solid var(--line); border-radius: 12px; gap: 14px;
+        opacity: 1 !important; transform: none !important;
+      }
+      #contact .contact-line:last-of-type { margin-bottom: 0; }
+      #contact .contact-line-icon { width: 36px !important; height: 36px !important; flex-shrink: 0; }
+      #contact .contact-line > div:last-child { flex: 1; min-width: 0; font-size: .95rem; line-height: 1.4; text-align: left; word-break: break-word; }
+      #contact .contact-line small { font-size: .65rem; margin-bottom: 4px; }
+      #contact .form { width: 100% !important; padding: 24px 20px; border-radius: 16px; }
+      #contact .form h3 { font-size: 1.15rem; margin-bottom: 6px; }
+      #contact .form-note { font-size: .85rem; margin-bottom: 20px; }
+      #contact .timer-line { padding: 10px 14px; font-size: .8rem; margin-bottom: 20px; }
+      #contact .form-group { margin-bottom: 16px; width: 100%; }
+      #contact .form-group input, #contact .form-group textarea, #contact .form-group select { width: 100% !important; padding: 14px 16px; font-size: 16px !important; border-radius: 10px; }
+      #contact .form-submit { width: 100% !important; padding: 16px; font-size: .9rem; margin-top: 8px; }
+      #contact .form .form-group, #contact .form .form-submit { opacity: 1 !important; transform: none !important; animation: none !important; }
+      #contact .section-title::after { display: none; }
+    }
+
+    @media (max-width: 380px) {
+      #contact .contact-info .section-title { font-size: 1.4rem; }
+      #contact .form { padding: 20px 16px; }
+      #contact .contact-line { padding: 12px 14px; gap: 10px; }
+      #contact .contact-line-icon { width: 32px !important; height: 32px !important; }
+    }
+
+    @media (max-width: 900px) {
+      .header { padding: 12px 0; }
+      .header.scrolled { padding: 8px 0; }
+      .header-inner { min-height: 44px; gap: 12px; }
+      .logo { font-size: 1rem; letter-spacing: .06em; }
+      .logo:hover { letter-spacing: .06em; }
+      .nav-pill { display: none; }
+      .header-phone { display: none; }
+      .menu-trigger { width: 44px; height: 44px; padding: 12px; }
+      .hero { padding-top: 100px; padding-bottom: 48px; min-height: 100svh; }
+      .hero-content { max-width: 100%; }
+      .hero-badge { font-size: .64rem; padding: 6px 12px; letter-spacing: .12em; margin-bottom: 20px; }
+      .hero h1 { font-size: clamp(1.9rem, 9vw, 3rem); line-height: 1.06; letter-spacing: -.025em; margin-bottom: 18px; }
+      .hero p { font-size: .96rem; margin-bottom: 26px; max-width: 100%; }
+      .hero-actions { gap: 10px; }
+      .hero-actions .btn { width: 100%; }
+      .hero-stats { gap: 20px 28px; margin-top: 36px; padding-top: 22px; flex-wrap: wrap; }
+      .hero-stat strong { font-size: 1.5rem; }
+      .hero-stat span { font-size: .68rem; }
+      .scroll-indicator { display: none; }
+      .numbers-ticker { padding: 14px 0; }
+      .numbers-ticker .ticker-item { font-size: .82rem; padding: 0 16px; gap: 16px; }
+      .section { padding: 56px 0; }
+      .section-title { font-size: clamp(1.6rem, 6.5vw, 2.2rem); }
+      .section-subtitle { font-size: .95rem; margin-bottom: 32px; margin-top: 16px; }
+      .filter-bar { flex-direction: column; align-items: stretch; gap: 12px; }
+      .filter-tabs { gap: 6px; overflow-x: auto; flex-wrap: nowrap; padding-bottom: 4px; scrollbar-width: none; }
+      .filter-tabs::-webkit-scrollbar { display: none; }
+      .filter-btn { flex-shrink: 0; padding: 8px 14px; font-size: .68rem; }
+      .compare-toggle { padding: 10px 18px; font-size: .72rem; align-self: flex-start; }
+      .services-grid { grid-template-columns: 1fr; gap: 14px; }
+      .service-body { padding: 18px 20px 22px; }
+      .service-body h3 { font-size: 1rem; }
+      .service-body p { font-size: .84rem; }
+      .service-link { font-size: .7rem; }
+      .card-actions { top: 10px; right: 10px; }
+      .fav-btn, .compare-check { width: 30px; height: 30px; }
+      .service-icon { width: 40px; height: 40px; left: 16px; bottom: 14px; }
+      .service-icon svg { width: 18px; height: 18px; }
+      .calc { grid-template-columns: 1fr; padding: 24px 18px; gap: 20px; }
+      .calc h3 { font-size: 1rem; }
+      .calc > div > p { font-size: .82rem; margin-bottom: 18px; }
+      .calc-field { margin-bottom: 14px; }
+      .calc-field label { font-size: .66rem; }
+      .calc-field select { padding: 11px 12px; font-size: .88rem; }
+      .calc-price { border-left: none; border-top: 1px solid var(--line); padding-left: 0; padding-top: 20px; align-items: stretch; }
+      .calc-price strong { font-size: 1.9rem; }
+      .calc-price .btn { width: 100%; margin-top: 18px !important; }
+      .pm-tabs { gap: 6px; overflow-x: auto; flex-wrap: nowrap; justify-content: flex-start; padding-bottom: 4px; scrollbar-width: none; }
+      .pm-tabs::-webkit-scrollbar { display: none; }
+      .pm-tab { flex-shrink: 0; padding: 8px 14px; font-size: .68rem; }
+      .pm-grid { grid-template-columns: 1fr; gap: 8px; }
+      .pm-item { padding: 14px 16px; }
+      .pm-item strong { font-size: .84rem; }
+      .pm-item span { font-size: .86rem; }
+      .timeline { padding-left: 44px; }
+      .timeline-line { left: 12px; }
+      .tl-step { padding-bottom: 28px; }
+      .tl-dot { left: -36px; top: 4px; width: 16px; height: 16px; }
+      .tl-step .num { font-size: .64rem; }
+      .tl-step h3 { font-size: .96rem; }
+      .tl-step p { font-size: .84rem; }
+      .reviews-grid { grid-template-columns: 1fr; gap: 12px; }
+      .review-card { padding: 22px 20px; }
+      .review-stars { font-size: .8rem; }
+      .review-text { font-size: .88rem; }
+      .faq-list { max-width: 100%; }
+      .faq-q { padding: 16px 0; font-size: .92rem; gap: 14px; }
+      .faq-icon { width: 12px; height: 12px; }
+      .faq-a p { font-size: .86rem; padding-bottom: 16px; }
+      .map-wrap { height: 320px; }
+      .map-overlay { top: 12px; left: 12px; padding: 10px 14px; font-size: .66rem; }
+      .footer { padding: 28px 0; }
+      .footer-inner { flex-direction: column; text-align: center; gap: 12px; font-size: .76rem; }
+      .quick-fab { width: 44px; height: 44px; right: 16px; bottom: 70px; }
+      .quick-fab svg { width: 18px; height: 18px; }
+      .to-top { width: 40px; height: 40px; right: 16px; bottom: 16px; }
+      .to-top svg { width: 15px; height: 15px; }
+      .modal { padding: 12px; align-items: flex-end; }
+      .modal-inner { padding: 24px 20px; border-radius: 18px 18px 0 0; max-height: 92vh; }
+      .modal-inner h3 { font-size: 1.1rem; }
+      .modal-inner .muted { font-size: .82rem; margin-bottom: 18px; }
+      .modal-close { top: 14px; right: 14px; width: 34px; height: 34px; }
+      .service-page { padding: 96px 0 40px; }
+      .service-page-back { font-size: .74rem; margin-bottom: 24px; }
+      .service-page h1 { font-size: clamp(1.6rem, 7vw, 2.2rem); margin-bottom: 14px; }
+      .service-page .lead { font-size: .94rem; margin-bottom: 22px; }
+      .service-hero-img { max-height: 240px; margin-bottom: 28px; }
+      .service-page-meta { gap: 6px; margin-bottom: 24px; }
+      .meta-tag { padding: 6px 12px; font-size: .64rem; }
+      .service-details { grid-template-columns: 1fr; gap: 22px; margin-bottom: 32px; }
+      .service-details h3 { font-size: .96rem; }
+      .service-details ul li { font-size: .86rem; margin-bottom: 10px; }
+      .service-cta { width: 100%; justify-content: center; padding: 14px 22px; font-size: .8rem; }
+      .share-btn { width: 100%; justify-content: center; margin-left: 0; margin-top: 10px; padding: 12px 16px; }
+      .recently { margin-top: 40px; padding-top: 22px; }
+      .recently h4 { font-size: .7rem; }
+      .recently-list a { font-size: .74rem; padding: 7px 13px; }
+      .site-menu__inner { padding: 84px 20px 28px; gap: 28px; }
+      .site-menu__top { padding-bottom: 18px; }
+      .site-menu__logo { font-size: .96rem; }
+      .site-menu__close { width: 40px; height: 40px; }
+      .site-menu__grid { grid-template-columns: 1fr; gap: 28px; }
+      .site-menu__label { font-size: .66rem; margin-bottom: 16px; padding-bottom: 10px; }
+      .site-menu__link { font-size: 1rem; padding: 12px 0; gap: 12px; }
+      .site-menu__link::before { min-width: 20px; font-size: .62rem; }
+      .site-menu__list--secondary .site-menu__link { font-size: .9rem; padding: 10px 0; }
+      .site-menu__footer { flex-direction: column; align-items: stretch; gap: 16px; padding-top: 22px; }
+      .site-menu__contact { font-size: .8rem; text-align: center; }
+      .site-menu__cta { width: 100%; text-align: center; padding: 14px 22px; }
+    }
+
+    @media (max-width: 480px) {
+      .container { width: calc(100% - 32px); }
+      .hero h1 { font-size: clamp(1.75rem, 10vw, 2.4rem); }
+      .hero p { font-size: .9rem; }
+      .hero-stat strong { font-size: 1.35rem; }
+      .section-title { font-size: clamp(1.5rem, 7vw, 1.9rem); }
+      .section-subtitle { font-size: .9rem; }
+      .filter-btn { padding: 7px 12px; font-size: .64rem; }
+      .review-card { padding: 20px 18px; }
+      .review-text { font-size: .84rem; }
+      .form { padding: 20px 16px; }
+      .calc { padding: 22px 16px; }
+      .calc-price strong { font-size: 1.7rem; }
+      .service-page h1 { font-size: clamp(1.4rem, 8vw, 1.9rem); }
+      .meta-tag { font-size: .6rem; padding: 5px 10px; }
+      .site-menu__link { font-size: .94rem; }
+      .site-menu__list--secondary .site-menu__link { font-size: .86rem; }
+    }
+
+    @media (max-width: 360px) {
+      .hero h1 { font-size: 1.6rem; }
+      .hero-stats { flex-direction: column; gap: 14px; }
+      .logo { font-size: .92rem; }
+      .menu-trigger { width: 40px; height: 40px; padding: 10px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .reveal, .hero-badge, .hero h1 .line span, .hero p, .hero-actions, .hero-stats, .scroll-indicator, .service-card {
+        opacity: 1 !important; transform: none !important; transition: none !important; animation: none !important;
+      }
+      .hero-bg::before, .hero-glow, .scroll-indicator::after, .timer-dot, .calc.highlight,
+      .service-card:hover .service-icon svg, .quick-fab, .menu-trigger:hover span { animation: none !important; }
+      .service-card:hover, .why-item:hover, .review-card:hover, .contact-line:hover { transform: none; }
+      .site-menu__item, .site-menu__top, .site-menu__label, .site-menu__footer { opacity: 1 !important; transform: none !important; transition: none !important; }
+      .nav-pill__links { max-width: none !important; opacity: 1 !important; }
+      .nav-pill__link { opacity: 1 !important; transform: none !important; }
+    }
+
+    /* ===== ПЕРЕКЛЮЧАТЕЛЬ ТЕМЫ ===== */
+    .theme-toggle {
+      width: 46px; height: 46px; border-radius: 50%;
+      border: 1px solid var(--line-strong);
+      color: var(--text); background: color-mix(in srgb, var(--bg) 65%, transparent);
+      backdrop-filter: blur(14px) saturate(140%);
+      display: inline-flex; align-items: center; justify-content: center;
+      position: relative; overflow: hidden; flex: 0 0 auto;
+      transition: color .35s var(--ease), background .35s var(--ease),
+        border-color .35s var(--ease), transform .45s var(--ease), box-shadow .35s;
+    }
+    .theme-toggle:hover {
+      background: var(--text); color: var(--bg);
+      border-color: var(--text); transform: rotate(18deg) scale(1.06);
+      box-shadow: 0 8px 24px color-mix(in srgb, var(--text) 14%, transparent);
+    }
+    .theme-toggle svg { width: 19px; height: 19px; fill: none; stroke: currentColor;
+      stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round;
+      position: absolute; transition: transform .5s var(--ease), opacity .3s; }
+    .theme-toggle .icon-sun { opacity: 1; transform: rotate(0) scale(1); }
+    .theme-toggle .icon-moon { opacity: 0; transform: rotate(-70deg) scale(.5); }
+    html.light .theme-toggle .icon-sun { opacity: 0; transform: rotate(70deg) scale(.5); }
+    html.light .theme-toggle .icon-moon { opacity: 1; transform: rotate(0) scale(1); }
+    .theme-toggle:focus-visible { outline: 2px solid var(--text); outline-offset: 4px; }
+    @media (max-width: 900px) {
+      .theme-toggle { width: 44px; height: 44px; }
+    }
+
+    /* ===== ДОПОЛНИТЕЛЬНЫЕ АНИМАЦИИ ===== */
+    html { scroll-padding-top: 90px; }
+    .section-title { transition: letter-spacing .5s var(--ease); }
+    .section-title.visible { letter-spacing: -.035em; }
+    .why-item, .review-card, .pm-item, .contact-line, .service-card {
+      transform-style: preserve-3d;
+    }
+    .why-item, .review-card, .pm-item {
+      transition: transform .55s var(--ease), border-color .4s, box-shadow .55s var(--ease), background .4s;
+    }
+    .why-item:hover, .review-card:hover {
+      transform: translateY(-7px) scale(1.012);
+      box-shadow: 0 18px 42px rgba(0,0,0,.14);
+    }
+    .service-card::before {
+      content: ""; position: absolute; inset: 0; z-index: 4; pointer-events: none;
+      background: linear-gradient(115deg, transparent 20%, rgba(255,255,255,.10) 48%, transparent 72%);
+      transform: translateX(-130%); transition: transform .9s var(--ease);
+    }
+    .service-card:hover::before { transform: translateX(130%); }
+    .service-media img { transition: transform 1.1s var(--ease), filter .7s ease; }
+    .btn, .filter-btn, .pm-tab, .compare-toggle { will-change: transform; }
+    .filter-btn:hover, .pm-tab:hover { transform: translateY(-2px); }
+    .faq-item { transition: border-color .35s; }
+    .faq-item.open { border-color: var(--line-strong); }
+    .faq-q { transition: padding .35s var(--ease), color .3s; }
+    .faq-item.open .faq-q { padding-left: 8px; }
+    .contact-line-icon { transition: transform .4s var(--ease), background .3s, border-color .3s; }
+    .contact-line:hover .contact-line-icon { transform: rotate(-7deg) scale(1.08); }
+    .hero-content { animation: heroFloatIn 1s var(--ease) both; }
+    @keyframes heroFloatIn {
+      from { opacity: 0; transform: translateY(28px) scale(.985); filter: blur(5px); }
+      to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+    }
+    .hero-glow::after {
+      content: ""; position: absolute; inset: 12%; border-radius: 50%;
+      border: 1px solid color-mix(in srgb, var(--text) 8%, transparent);
+      animation: glowOrbit 18s linear infinite;
+    }
+    @keyframes glowOrbit { to { transform: rotate(360deg); } }
+    .scroll-progress { box-shadow: 0 0 10px color-mix(in srgb, var(--text) 55%, transparent); }
+    .to-top, .quick-fab { transition: transform .4s var(--ease), opacity .3s, background .3s, box-shadow .4s; }
+    .quick-fab:hover { transform: translateY(-5px) scale(1.1); }
+    .reveal { filter: blur(3px); }
+    .reveal.visible { filter: blur(0); }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+      .reveal { opacity: 1 !important; transform: none !important; filter: none !important; }
+    }
+
+    /* ===== ДОПОЛНИТЕЛЬНАЯ ПЛАВНАЯ АНИМАЦИЯ ===== */
+    .hero h1 .line span { animation: headlineRise 1.15s cubic-bezier(.16,1,.3,1) both; }
+    .hero h1 .line:nth-child(2) span { animation-delay: .18s; }
+    @keyframes headlineRise {
+      0% { opacity: 0; transform: translateY(115%) rotate(2deg); filter: blur(9px); }
+      100% { opacity: 1; transform: translateY(0) rotate(0); filter: blur(0); }
+    }
+    .hero-video { transform: scale(1.045); animation: heroVideoSettle 2s cubic-bezier(.16,1,.3,1) both; }
+    @keyframes heroVideoSettle { from { transform: scale(1.13); filter: brightness(.45); } to { transform: scale(1.045); filter: brightness(1); } }
+    .hero-stats .hero-stat { animation: statPop .8s cubic-bezier(.16,1,.3,1) both; }
+    .hero-stats .hero-stat:nth-child(2) { animation-delay: .12s; }
+    .hero-stats .hero-stat:nth-child(3) { animation-delay: .24s; }
+    @keyframes statPop { from { opacity: 0; transform: translateY(18px) scale(.94); } to { opacity: 1; transform: translateY(0) scale(1); } }
+    .section { isolation: isolate; }
+    .section-title.visible { animation: titleFocus .7s cubic-bezier(.16,1,.3,1) both; }
+    @keyframes titleFocus { from { opacity: .35; transform: translateY(22px); letter-spacing: .02em; } to { opacity: 1; transform: translateY(0); } }
+    .service-card, .pm-item, .faq-item, .process-item {
+      transition: transform .55s cubic-bezier(.16,1,.3,1), box-shadow .55s, border-color .4s;
+    }
+    .service-card:hover, .pm-item:hover { transform: translateY(-9px) scale(1.012); box-shadow: 0 22px 50px rgba(0,0,0,.18); }
+    .service-card:hover .service-media img { transform: scale(1.075); }
+    .btn { position: relative; overflow: hidden; transition: transform .35s cubic-bezier(.16,1,.3,1), box-shadow .35s, background .35s; }
+    .btn::after {
+      content: ""; position: absolute; inset: -50% auto -50% -70%; width: 42%;
+      transform: skewX(-22deg); background: linear-gradient(90deg, transparent, rgba(255,255,255,.25), transparent);
+      transition: left .75s cubic-bezier(.16,1,.3,1); pointer-events: none;
+    }
+    .btn:hover::after { left: 140%; }
+    .btn:hover { transform: translateY(-3px); box-shadow: 0 12px 28px rgba(0,0,0,.18); }
+    .contact-line:hover { transform: translateX(7px); }
+    .faq-item:hover { transform: translateX(4px); }
+    .logo { transition: letter-spacing .4s, opacity .3s; }
+    .logo:hover { letter-spacing: .045em; opacity: .78; }
+    .scroll-indicator { animation: indicatorFloat 2.4s ease-in-out infinite; }
+    @keyframes indicatorFloat { 0%,100% { transform: translateY(0); opacity: .65; } 50% { transform: translateY(8px); opacity: 1; } }
+    @media (max-width: 700px) {
+      .hero { text-align: center; }
+      .hero h1 { font-size: clamp(2.7rem, 11vw, 4.6rem); }
+      .hero-stats { gap: 22px 30px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .hero-video, .hero-stats .hero-stat { animation: none !important; }
+    }
+
+  </style>
+</head>
+<body>
+
+  <div class="preloader" id="preloader">
+    <div class="preloader-logo">Lummar Detailing</div>
+    <div class="preloader-bar"></div>
+  </div>
+
+  <div class="scroll-progress" id="scrollProgress"></div>
+  <div class="cursor-dot" id="cursorDot"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+
+  <header class="header" id="header">
+    <div class="container header-inner">
+      <a href="#" class="logo" data-page-link="home">Lummar<span>Detailing</span></a>
+
+      <div class="header-actions">
+        <div class="nav-pill" id="navPill">
+          <span class="nav-pill__label">
+            Меню
+            <svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+          </span>
+          <div class="nav-pill__links">
+            <a href="#services" class="nav-pill__link" data-page-link="home" data-section="services">Услуги</a>
+            <a href="#reviews" class="nav-pill__link" data-page-link="home" data-section="reviews">Отзывы</a>
+            <a href="#faq" class="nav-pill__link" data-page-link="home" data-section="faq">FAQ</a>
+            <a href="#contact" class="nav-pill__link" data-page-link="home" data-section="contact">Контакты</a>
+          </div>
+        </div>
+
+        <button class="theme-toggle" id="themeToggle" type="button"
+          aria-label="Включить светлую тему" aria-pressed="false" title="Сменить тему">
+          <svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"></path>
+          </svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M20.2 15.2A8.5 8.5 0 0 1 8.8 3.8 8.6 8.6 0 1 0 20.2 15.2Z"></path>
+          </svg>
+        </button>
+
+        <button class="menu-trigger" id="menuTrigger" aria-label="Открыть меню" aria-expanded="false">
+          <span></span><span></span><span></span><span></span>
+        </button>
+      </div>
+
+      <a href="tel:+79000000000" class="header-phone">+7 (950) 337-13-48</a>
+    </div>
+  </header>
+
+  <div class="site-menu" id="siteMenu" role="dialog" aria-modal="true" aria-label="Меню сайта" aria-hidden="true">
+    <div class="site-menu__inner">
+      <div class="site-menu__top">
+        <div class="site-menu__logo">Lummar<span>Detailing</span></div>
+        <button class="site-menu__close" id="siteMenuClose" aria-label="Закрыть меню">
+          <svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <div class="site-menu__grid">
+        <div class="site-menu__col">
+          <div class="site-menu__label">Услуги</div>
+          <nav class="site-menu__list" aria-label="Услуги">
+            <div class="site-menu__item"><a href="#service/tint" class="site-menu__link" data-page-link="service" data-service="tint">Тонирование <span class="arrow">→</span></a></div>
+            <div class="site-menu__item"><a href="#service/armor" class="site-menu__link" data-page-link="service" data-service="armor">Бронирование <span class="arrow">→</span></a></div>
+            <div class="site-menu__item"><a href="#service/ppf" class="site-menu__link" data-page-link="service" data-service="ppf">Оклейка полиуретановыми плёнками <span class="arrow">→</span></a></div>
+            <div class="site-menu__item"><a href="#service/vinyl" class="site-menu__link" data-page-link="service" data-service="vinyl">Оклейка виниловыми плёнками <span class="arrow">→</span></a></div>
+            <div class="site-menu__item"><a href="#service/defense" class="site-menu__link" data-page-link="service" data-service="defense">Оклейка защитными плёнками <span class="arrow">→</span></a></div>
+            <div class="site-menu__item"><a href="#service/color" class="site-menu__link" data-page-link="service" data-service="color">Оклейка цветными плёнками <span class="arrow">→</span></a></div>
+            <div class="site-menu__item"><a href="#service/polish" class="site-menu__link" data-page-link="service" data-service="polish">Полировка кузова <span class="arrow">→</span></a></div>
+            <div class="site-menu__item"><a href="#service/headlights" class="site-menu__link" data-page-link="service" data-service="headlights">Полировка фар <span class="arrow">→</span></a></div>
+          </nav>
+        </div>
+
+        <div class="site-menu__col">
+          <div class="site-menu__label">Информация</div>
+          <nav class="site-menu__list site-menu__list--secondary" aria-label="Информация">
+            <div class="site-menu__item"><a href="#numbers" class="site-menu__link" data-page-link="home">Наши услуги</a></div>
+            <div class="site-menu__item"><a href="#why" class="site-menu__link" data-page-link="home">Почему мы</a></div>
+            <div class="site-menu__item"><a href="#process" class="site-menu__link" data-page-link="home">Этапы работы</a></div>
+            <div class="site-menu__item"><a href="#reviews" class="site-menu__link" data-page-link="home">Отзывы клиентов</a></div>
+            <div class="site-menu__item"><a href="#pricemap" class="site-menu__link" data-page-link="home">Карта цен</a></div>
+            <div class="site-menu__item"><a href="#faq" class="site-menu__link" data-page-link="home">Частые вопросы</a></div>
+            <div class="site-menu__item"><a href="#contact" class="site-menu__link" data-page-link="home">Контакты</a></div>
+          </nav>
+        </div>
+      </div>
+
+      <div class="site-menu__footer">
+        <div class="site-menu__contact">
+          <strong>+7 (928) 365-50-02</strong>
+          Ежедневно с 09:30 до 20:00<br>
+          г. Ессентуки, ул. Подкумская, 13
+        </div>
+        <a href="#contact" class="site-menu__cta" data-page-link="home">Записаться</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= ГЛАВНАЯ ================= -->
+  <main id="page-home" class="page-view active">
+
+    <section class="hero" id="hero">
+      <video class="hero-video" autoplay muted loop playsinline preload="auto">
+        <source src="ef9ab565b86c437de33caa9a8c6649e4_720w.mp4" type="video/mp4">
+      </video>
+      <div class="hero-video-overlay"></div>
+      <div class="hero-bg"></div>
+      <div class="hero-glow" id="heroGlow"></div>
+      <div class="container">
+        <div class="hero-content">
+          <h1>
+            <span class="line"><span>Знаем всё про</span></span>
+            <span class="line"><span>профессиональный <span class="accent">детейлинг</span></span></span>
+          </h1>
+          <p>Тонирование, бронирование, оклейка плёнками и полировка. Работаем с автомобилями любого класса — от городских хэтчбеков до премиальных купе.</p>
+          <div class="hero-actions">
+            <a href="#contact" class="btn btn-primary" data-magnetic data-page-link="home">Записаться</a>
+            <a href="#services" class="btn btn-outline" data-magnetic data-page-link="home">Все услуги</a>
+          </div>
+          <div class="hero-stats">
+            <div class="hero-stat"><strong data-count="20" data-suffix="+">0</strong><span>лет на рынке</span></div>
+            <div class="hero-stat"><strong data-count="500" data-suffix="+">0</strong><span>автомобилей</span></div>
+            <div class="hero-stat"><strong data-count="1" data-suffix=" год">0</strong><span>гарантии</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="scroll-indicator" aria-hidden="true"></div>
+    </section>
+
+    <section class="numbers" id="numbers" aria-label="Наши услуги">
+      <div class="numbers-ticker">
+        <div class="ticker-track">
+          <div class="ticker-group">
+            <span class="ticker-item">Тонирование</span>
+            <span class="ticker-item">Бронирование</span>
+            <span class="ticker-item">Оклейка полиуретановыми плёнками</span>
+            <span class="ticker-item">Оклейка виниловыми плёнками</span>
+            <span class="ticker-item">Оклейка защитными плёнками</span>
+            <span class="ticker-item">Оклейка цветными плёнками</span>
+            <span class="ticker-item">Полировка кузова</span>
+            <span class="ticker-item">Полировка фар</span>
+          </div>
+          <div class="ticker-group" aria-hidden="true">
+            <span class="ticker-item">Тонирование</span>
+            <span class="ticker-item">Бронирование</span>
+            <span class="ticker-item">Оклейка полиуретановыми плёнками</span>
+            <span class="ticker-item">Оклейка виниловыми плёнками</span>
+            <span class="ticker-item">Оклейка защитными плёнками</span>
+            <span class="ticker-item">Оклейка цветными плёнками</span>
+            <span class="ticker-item">Полировка кузова</span>
+            <span class="ticker-item">Полировка фар</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="services">
+      <div class="container">
+        <span class="eyebrow reveal"></span>
+        <h2 class="section-title reveal">Услуги детейлинг-центра</h2>
+        <p class="section-subtitle reveal">Восемь направлений — от тонирования до полировки. Нажмите на карточку, чтобы открыть страницу услуги.</p>
+
+        <div class="filter-bar reveal">
+          <div class="filter-tabs" id="filterBar">
+            <button class="filter-btn active" data-filter="all">Все</button>
+            <button class="filter-btn" data-filter="tint">Тонирование</button>
+            <button class="filter-btn" data-filter="armor">Бронирование</button>
+            <button class="filter-btn" data-filter="film">Оклейка плёнками</button>
+            <button class="filter-btn" data-filter="polish">Полировка</button>
+          </div>
+          <button class="compare-toggle" id="compareToggle" disabled>
+            Сравнить <span class="compare-count" id="compareCount">0</span>
+          </button>
+        </div>
+
+        <div class="services-grid" id="servicesGrid">
+
+          <article class="service-card" data-service="tint" data-category="tint">
+            <a href="#service/tint" class="service-media" data-page-link="service" data-service="tint" aria-label="Тонирование — подробнее">
+              <img src="https://images.unsplash.com/photo-1502877338535-766e1452684a?q=80&w=800&auto=format&fit=crop" alt="Тонирование" loading="lazy">
+              <div class="service-icon"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18"/></svg></div>
+            </a>
+            <div class="card-actions">
+              <button class="compare-check" data-compare="tint" aria-label="Добавить к сравнению"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></button>
+              <button class="fav-btn" data-fav="tint" aria-label="В избранное"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></button>
+            </div>
+            <div class="service-body">
+              <h3><a href="#service/tint" data-page-link="service" data-service="tint">Тонирование</a></h3>
+              <p>Плёнки с защитой от УФ и нагрева. Приватность без потери обзора.</p>
+              <div class="service-footer">
+                <a href="#service/tint" class="service-link" data-page-link="service" data-service="tint">Подробнее <span>→</span></a>
+              </div>
+            </div>
+          </article>
+
+          <article class="service-card" data-service="armor" data-category="armor">
+            <a href="#service/armor" class="service-media" data-page-link="service" data-service="armor" aria-label="Бронирование — подробнее">
+              <img src="https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=800&auto=format&fit=crop" alt="Бронирование" loading="lazy">
+              <div class="service-icon"><svg viewBox="0 0 24 24"><path d="M12 2l8 4v6c0 5-3.5 9-8 10-4.5-1-8-5-8-10V6l8-4z"/></svg></div>
+            </a>
+            <div class="card-actions">
+              <button class="compare-check" data-compare="armor" aria-label="Добавить к сравнению"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></button>
+              <button class="fav-btn" data-fav="armor" aria-label="В избранное"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></button>
+            </div>
+            <div class="service-body">
+              <h3><a href="#service/armor" data-page-link="service" data-service="armor">Бронирование</a></h3>
+              <p>Защита кузова от сколов и царапин. Клеим на зоны риска или на весь кузов.</p>
+              <div class="service-footer">
+                <a href="#service/armor" class="service-link" data-page-link="service" data-service="armor">Подробнее <span>→</span></a>
+              </div>
+            </div>
+          </article>
+
+          <article class="service-card" data-service="ppf" data-category="film">
+            <a href="#service/ppf" class="service-media" data-page-link="service" data-service="ppf" aria-label="Оклейка полиуретановыми плёнками — подробнее">
+              <img src="https://images.unsplash.com/photo-1601362840469-51e4d8d58785?q=80&w=800&auto=format&fit=crop" alt="Оклейка полиуретановыми плёнками" loading="lazy">
+              <div class="service-icon"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 12h18"/></svg></div>
+            </a>
+            <div class="card-actions">
+              <button class="compare-check" data-compare="ppf" aria-label="Добавить к сравнению"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></button>
+              <button class="fav-btn" data-fav="ppf" aria-label="В избранное"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></button>
+            </div>
+            <div class="service-body">
+              <h3><a href="#service/ppf" data-page-link="service" data-service="ppf">Оклейка полиуретановыми плёнками</a></h3>
+              <p>Полиуретан защищает от сколов и царапин. Клеим на зоны риска или на весь кузов.</p>
+              <div class="service-footer">
+                <a href="#service/ppf" class="service-link" data-page-link="service" data-service="ppf">Подробнее <span>→</span></a>
+              </div>
+            </div>
+          </article>
+
+          <article class="service-card" data-service="vinyl" data-category="film">
+            <a href="#service/vinyl" class="service-media" data-page-link="service" data-service="vinyl" aria-label="Оклейка виниловыми плёнками — подробнее">
+              <img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=800&auto=format&fit=crop" alt="Оклейка виниловыми плёнками" loading="lazy">
+              <div class="service-icon"><svg viewBox="0 0 24 24"><path d="M4 20V8l8-5 8 5v12"/><path d="M9 20v-6h6v6"/></svg></div>
+            </a>
+            <div class="card-actions">
+              <button class="compare-check" data-compare="vinyl" aria-label="Добавить к сравнению"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></button>
+              <button class="fav-btn" data-fav="vinyl" aria-label="В избранное"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></button>
+            </div>
+            <div class="service-body">
+              <h3><a href="#service/vinyl" data-page-link="service" data-service="vinyl">Оклейка виниловыми плёнками</a></h3>
+              <p>Винил меняет цвет и фактуру кузова. Матовые, глянцевые и сатиновые варианты.</p>
+              <div class="service-footer">
+                <a href="#service/vinyl" class="service-link" data-page-link="service" data-service="vinyl">Подробнее <span>→</span></a>
+              </div>
+            </div>
+          </article>
+
+          <article class="service-card" data-service="defense" data-category="film">
+            <a href="#service/defense" class="service-media" data-page-link="service" data-service="defense" aria-label="Оклейка защитными плёнками — подробнее">
+              <img src="https://images.unsplash.com/photo-1607860108855-64acf2078ed9?q=80&w=800&auto=format&fit=crop" alt="Оклейка защитными плёнками" loading="lazy">
+              <div class="service-icon"><svg viewBox="0 0 24 24"><path d="M12 2l8 4v6c0 5-3.5 9-8 10-4.5-1-8-5-8-10V6l8-4z"/><path d="M9 12l2 2 4-4"/></svg></div>
+            </a>
+            <div class="card-actions">
+              <button class="compare-check" data-compare="defense" aria-label="Добавить к сравнению"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></button>
+              <button class="fav-btn" data-fav="defense" aria-label="В избранное"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></button>
+            </div>
+            <div class="service-body">
+              <h3><a href="#service/defense" data-page-link="service" data-service="defense">Оклейка защитными плёнками</a></h3>
+              <p>Прозрачный барьер от реагентов, песка и мелких повреждений.</p>
+              <div class="service-footer">
+                <a href="#service/defense" class="service-link" data-page-link="service" data-service="defense">Подробнее <span>→</span></a>
+              </div>
+            </div>
+          </article>
+
+          <article class="service-card" data-service="color" data-category="film">
+            <a href="#service/color" class="service-media" data-page-link="service" data-service="color" aria-label="Оклейка цветными плёнками — подробнее">
+              <img src="https://images.unsplash.com/photo-1580273916550-e323be2ae537?q=80&w=800&auto=format&fit=crop" alt="Оклейка цветными плёнками" loading="lazy">
+              <div class="service-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 0 18"/></svg></div>
+            </a>
+            <div class="card-actions">
+              <button class="compare-check" data-compare="color" aria-label="Добавить к сравнению"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></button>
+              <button class="fav-btn" data-fav="color" aria-label="В избранное"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></button>
+            </div>
+            <div class="service-body">
+              <h3><a href="#service/color" data-page-link="service" data-service="color">Оклейка цветными плёнками</a></h3>
+              <p>Смена цвета без покраски. Оригинальный лак остаётся под плёнкой.</p>
+              <div class="service-footer">
+                <a href="#service/color" class="service-link" data-page-link="service" data-service="color">Подробнее <span>→</span></a>
+              </div>
+            </div>
+          </article>
+
+          <article class="service-card" data-service="polish" data-category="polish">
+            <a href="#service/polish" class="service-media" data-page-link="service" data-service="polish" aria-label="Полировка кузова — подробнее">
+              <img src="https://images.unsplash.com/photo-1607860108855-64acf2078ed9?q=80&w=800&auto=format&fit=crop" alt="Полировка кузова" loading="lazy">
+              <div class="service-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18"/></svg></div>
+            </a>
+            <div class="card-actions">
+              <button class="compare-check" data-compare="polish" aria-label="Добавить к сравнению"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></button>
+              <button class="fav-btn" data-fav="polish" aria-label="В избранное"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></button>
+            </div>
+            <div class="service-body">
+              <h3><a href="#service/polish" data-page-link="service" data-service="polish">Полировка кузова</a></h3>
+              <p>Убираем царапины и голограммы, возвращаем глубину цвета.</p>
+              <div class="service-footer">
+                <a href="#service/polish" class="service-link" data-page-link="service" data-service="polish">Подробнее <span>→</span></a>
+              </div>
+            </div>
+          </article>
+
+          <article class="service-card" data-service="headlights" data-category="polish">
+            <a href="#service/headlights" class="service-media" data-page-link="service" data-service="headlights" aria-label="Полировка фар — подробнее">
+              <img src="https://images.unsplash.com/photo-1580273916550-e323be2ae537?q=80&w=800&auto=format&fit=crop" alt="Полировка фар" loading="lazy">
+              <div class="service-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="6"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/></svg></div>
+            </a>
+            <div class="card-actions">
+              <button class="compare-check" data-compare="headlights" aria-label="Добавить к сравнению"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></button>
+              <button class="fav-btn" data-fav="headlights" aria-label="В избранное"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></button>
+            </div>
+            <div class="service-body">
+              <h3><a href="#service/headlights" data-page-link="service" data-service="headlights">Полировка фар</a></h3>
+              <p>Возвращаем прозрачность и яркость свету. Убираем желтизну и помутнение.</p>
+              <div class="service-footer">
+                <a href="#service/headlights" class="service-link" data-page-link="service" data-service="headlights">Подробнее <span>→</span></a>
+              </div>
+            </div>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="why">
+      <div class="container">
+        <span class="eyebrow reveal">Почему мы</span>
+        <h2 class="section-title reveal">Подход, который видно</h2>
+        <p class="section-subtitle reveal">Четыре причины, по которым клиенты возвращаются и рекомендуют нас.</p>
+        <div class="why-grid">
+          <div class="why-item reveal"><span class="num">01</span><h3>Опыт 20+ лет</h3><p>Работаем с кузовом и плёнками с 2004 года. Знаем нюансы каждой марки.</p></div>
+          <div class="why-item reveal"><span class="num">02</span><h3>Материалы премиум</h3><p>Используем плёнки и составы проверенных производителей.</p></div>
+          <div class="why-item reveal"><span class="num">03</span><h3>Гарантия 1 год</h3><p>Отвечаем за качество оклейки и полировки. Даём письменную гарантию.</p></div>
+          <div class="why-item reveal"><span class="num">04</span><h3>Честные сроки</h3><p>Согласуем дату и время, не задерживаем. Работаем по записи.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="process">
+      <div class="container">
+        <span class="eyebrow reveal">Этапы работы</span>
+        <h2 class="section-title reveal">Как проходит работа</h2>
+        <p class="section-subtitle reveal">Пять шагов от заявки до выдачи автомобиля.</p>
+        <div class="timeline">
+          <div class="timeline-line"></div>
+          <div class="tl-step reveal"><span class="tl-dot"></span><div class="num">Шаг 01</div><h3>Заявка</h3><p>Оставляете заявку на сайте или звоните. Уточняем задачу.</p></div>
+          <div class="tl-step reveal"><span class="tl-dot"></span><div class="num">Шаг 02</div><h3>Осмотр</h3><p>Приезжаете в центр, мастер оценивает состояние кузова.</p></div>
+          <div class="tl-step reveal"><span class="tl-dot"></span><div class="num">Шаг 03</div><h3>Смета</h3><p>Согласуем объём работ, материалы и стоимость.</p></div>
+          <div class="tl-step reveal"><span class="tl-dot"></span><div class="num">Шаг 04</div><h3>Работа</h3><p>Выполняем оклейку, тонирование или полировку.</p></div>
+          <div class="tl-step reveal"><span class="tl-dot"></span><div class="num">Шаг 05</div><h3>Выдача</h3><p>Проверяем результат вместе с вами, даём гарантию.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="calc">
+      <div class="container">
+        <span class="eyebrow reveal">Калькулятор</span>
+        <h2 class="section-title reveal">Рассчитайте стоимость</h2>
+        <p class="section-subtitle reveal">Выберите услугу и класс автомобиля — покажем ориентировочную цену.</p>
+        <div class="calc reveal">
+          <div>
+            <h3>Параметры</h3>
+            <p>Стоимость зависит от услуги и размера кузова.</p>
+            <div class="calc-field">
+              <label for="calcService">Услуга</label>
+              <select id="calcService">
+                <option value="tint">Тонирование</option>
+                <option value="armor">Бронирование</option>
+                <option value="ppf">Оклейка полиуретановыми плёнками</option>
+                <option value="vinyl">Оклейка виниловыми плёнками</option>
+                <option value="defense">Оклейка защитными плёнками</option>
+                <option value="color">Оклейка цветными плёнками</option>
+                <option value="polish">Полировка кузова</option>
+                <option value="headlights">Полировка фар</option>
+              </select>
+            </div>
+            <div class="calc-field">
+              <label for="calcClass">Класс авто</label>
+              <select id="calcClass">
+                <option value="1">Хэтчбек / седан</option>
+                <option value="1.3">Кроссовер / SUV</option>
+                <option value="1.6">Премиум / купе</option>
+              </select>
+            </div>
+          </div>
+          <div class="calc-price">
+            <small>Ориентировочно</small>
+            <strong id="calcPrice">от 8 000 ₽</strong>
+            <span class="note">Точную цену скажем после осмотра.</span>
+            <a href="#contact" class="btn btn-primary" style="margin-top:22px" data-page-link="home">Записаться</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="pricemap">
+      <div class="container">
+        <span class="eyebrow reveal">Карта цен</span>
+        <h2 class="section-title reveal">Прайс по услугам</h2>
+        <p class="section-subtitle reveal">Ориентировочные цены. Финальная стоимость — после осмотра.</p>
+        <div class="price-map reveal">
+          <div class="pm-tabs">
+            <button class="pm-tab active" data-pm="all">Все</button>
+            <button class="pm-tab" data-pm="tint">Тонирование</button>
+            <button class="pm-tab" data-pm="armor">Бронирование</button>
+            <button class="pm-tab" data-pm="film">Плёнки</button>
+            <button class="pm-tab" data-pm="polish">Полировка</button>
+          </div>
+          <div class="pm-grid">
+            <div class="pm-item" data-pmcat="tint"><strong>Тонирование передних стёкол</strong><span>от 3 500 ₽</span></div>
+            <div class="pm-item" data-pmcat="tint"><strong>Тонирование задней полусферы</strong><span>от 6 000 ₽</span></div>
+            <div class="pm-item" data-pmcat="armor"><strong>Бронирование зон риска</strong><span>от 15 000 ₽</span></div>
+            <div class="pm-item" data-pmcat="armor"><strong>Бронирование всего кузова</strong><span>от 80 000 ₽</span></div>
+            <div class="pm-item" data-pmcat="film"><strong>Оклейка полиуретаном</strong><span>от 90 000 ₽</span></div>
+            <div class="pm-item" data-pmcat="film"><strong>Оклейка винилом</strong><span>от 60 000 ₽</span></div>
+            <div class="pm-item" data-pmcat="film"><strong>Оклейка защитной плёнкой</strong><span>от 50 000 ₽</span></div>
+            <div class="pm-item" data-pmcat="film"><strong>Оклейка цветной плёнкой</strong><span>от 70 000 ₽</span></div>
+            <div class="pm-item" data-pmcat="polish"><strong>Полировка кузова</strong><span>от 8 000 ₽</span></div>
+            <div class="pm-item" data-pmcat="polish"><strong>Полировка фар</strong><span>от 2 500 ₽</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="reviews">
+      <div class="container">
+        <span class="eyebrow reveal">Отзывы</span>
+        <h2 class="section-title reveal">Что говорят клиенты</h2>
+        <p class="section-subtitle reveal">Реальные отзывы после оклейки, тонирования и полировки.</p>
+        <div class="reviews-grid">
+          <div class="review-card reveal">
+            <div class="review-stars">★★★★★</div>
+            <p class="review-text">Оклеил кузов полиуретаном. Всё аккуратно, швов не видно. Машина как новая.</p>
+            <div class="review-author">Алексей, BMW 3</div>
+          </div>
+          <div class="review-card reveal">
+            <div class="review-stars">★★★★★</div>
+            <p class="review-text">Тонировал стёкла — сделали быстро, плёнка ровная, без пузырей. Рекомендую.</p>
+            <div class="review-author">Марина, Kia Sportage</div>
+          </div>
+          <div class="review-card reveal">
+            <div class="review-stars">★★★★★</div>
+            <p class="review-text">Полировка фар вернула свет. Стало реально ярче, ночью ездить комфортно.</p>
+            <div class="review-author">Дмитрий, Ford Focus</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="faq">
+      <div class="container">
+        <span class="eyebrow reveal">FAQ</span>
+        <h2 class="section-title reveal">Частые вопросы</h2>
+        <p class="section-subtitle reveal">Отвечаем на то, что спрашивают чаще всего.</p>
+        <div class="faq-list">
+          <div class="faq-item reveal">
+            <button class="faq-q">Сколько держится плёнка?<span class="faq-icon"></span></button>
+            <div class="faq-a"><p>Полиуретан — 5–7 лет, винил — 3–5 лет при правильном уходе. Даём гарантию 1 год.</p></div>
+          </div>
+          <div class="faq-item reveal">
+            <button class="faq-q">Можно ли мыть авто после оклейки?<span class="faq-icon"></span></button>
+            <div class="faq-a"><p>Да, но первые 7 дней — без активной химии и жёстких щёток. Лучше бесконтактная мойка.</p></div>
+          </div>
+          <div class="faq-item reveal">
+            <button class="faq-q">Тонирование разрешено законом?<span class="faq-icon"></span></button>
+            <div class="faq-a"><p>Передние стёкла — не менее 70% светопропускания. Заднюю полусферу можно тонировать свободно.</p></div>
+          </div>
+          <div class="faq-item reveal">
+            <button class="faq-q">Сколько занимает оклейка кузова?<span class="faq-icon"></span></button>
+            <div class="faq-a"><p>Полиуретан на весь кузов — 3–5 дней, винил — 2–4 дня. Точный срок скажем после осмотра.</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="contact">
+      <div class="container">
+        <div class="contact-wrap">
+          <div class="contact-info reveal">
+            <span class="eyebrow">Контакты</span>
+            <h2 class="section-title">Запишитесь на услугу</h2>
+            <p>Оставьте заявку — перезвоним, уточним детали и согласуем время.</p>
+            <div class="contact-line">
+              <div class="contact-line-icon"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
+              <div><small>Телефон</small><a href="tel:+79000000000">+7 (928) 365-50-02</a></div>
+            </div>
+            <div class="contact-line">
+              <div class="contact-line-icon"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+              <div><small>Адрес</small>г. Ессентуки, ул. Подкумская, 13</div>
+            </div>
+            <div class="contact-line">
+              <div class="contact-line-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div>
+              <div><small>Режим работы</small>Ежедневно с 09:30 до 20:00</div>
+            </div>
+          </div>
+
+          <form class="form reveal" id="contactForm" novalidate>
+            <h3>Оставить заявку</h3>
+            <p class="form-note">Перезвоним в течение 15 минут в рабочее время.</p>
+            <div class="timer-line"><span class="timer-dot"></span>Среднее время ответа: <strong>15 мин</strong></div>
+            <div class="form-group">
+              <label for="name">Имя</label>
+              <input type="text" id="name" name="name" placeholder="Как к вам обращаться" required>
+              <span class="form-error">Укажите имя</span>
+            </div>
+            <div class="form-group">
+              <label for="phone">Телефон</label>
+              <input type="tel" id="phone" name="phone" placeholder="+7 (___) ___-__-__" required>
+              <span class="form-error">Укажите телефон</span>
+            </div>
+            <div class="form-group">
+              <label for="service">Услуга</label>
+              <select id="service" name="service">
+                <option value="tint">Тонирование</option>
+                <option value="armor">Бронирование</option>
+                <option value="ppf">Оклейка полиуретановыми плёнками</option>
+                <option value="vinyl">Оклейка виниловыми плёнками</option>
+                <option value="defense">Оклейка защитными плёнками</option>
+                <option value="color">Оклейка цветными плёнками</option>
+                <option value="polish">Полировка кузова</option>
+                <option value="headlights">Полировка фар</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="message">Комментарий</label>
+              <textarea id="message" name="message" placeholder="Марка авто, пожелания"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary form-submit">Отправить заявку</button>
+            <div class="form-success" id="formSuccess">Спасибо! Заявка отправлена — скоро свяжемся.</div>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <section class="map-section">
+      <div class="map-wrap">
+        <iframe src="https://yandex.ru/map-widget/v1/?text=Ессентуки%20Подкумская%2013&z=16" loading="lazy" title="Карта"></iframe>
+        <div class="map-overlay"><strong>Адрес</strong>ул. Подкумская, 13</div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div class="container footer-inner">
+        <div>© 2024 Lummar Detailing. Все права защищены.</div>
+        <div><a href="tel:+79000000000">+7 (928) 365-50-02</a> · <a href="#contact" data-page-link="home">Записаться</a></div>
+      </div>
+    </footer>
+
+  </main>
+
+  <!-- ================= СТРАНИЦЫ УСЛУГ ================= -->
+
+  <main id="page-service-tint" class="page-view">
+    <div class="service-page">
+      <div class="container">
+        <a href="#home" class="service-page-back" data-page-link="home">← На главную</a>
+        <h1>Тонирование</h1>
+        <p class="lead">Плёнки с защитой от УФ и нагрева. Приватность без потери обзора. Работаем с передними и задними стёклами, соблюдаем ГОСТ по светопропусканию.</p>
+        <img class="service-hero-img" src="https://images.unsplash.com/photo-1502877338535-766e1452684a?q=80&w=1400&auto=format&fit=crop" alt="Тонирование">
+        <div class="service-page-meta">
+          <span class="meta-tag">Срок: 2–4 часа</span>
+          <span class="meta-tag">Гарантия: 1 год</span>
+          <span class="meta-tag">Материалы: премиум-плёнки</span>
+        </div>
+        <div class="service-details">
+          <div>
+            <h3>Что входит</h3>
+            <ul>
+              <li>Подбор плёнки по проценту светопропускания</li>
+              <li>Очистка и обезжиривание стёкол</li>
+              <li>Оклейка передних и задних стёкол</li>
+              <li>Контроль отсутствия пузырей и заломов</li>
+              <li>Инструкция по уходу и гарантия</li>
+            </ul>
+          </div>
+          <div>
+            <h3>Преимущества</h3>
+            <ul>
+              <li>Защита от УФ и перегрева салона</li>
+              <li>Приватность без потери обзора</li>
+              <li>Соответствие требованиям ГОСТ</li>
+              <li>Аккуратные края и без пузырей</li>
+            </ul>
+          </div>
+        </div>
+        <a href="#contact" class="service-cta" data-page-link="home" data-preselect="tint">Записаться на эту услугу →</a>
+        <a href="#home" class="share-btn" data-page-link="home">← Все услуги</a>
+        <div class="recently">
+          <h4>Другие услуги</h4>
+          <div class="recently-list">
+            <a href="#service/armor" data-page-link="service" data-service="armor">Бронирование</a>
+            <a href="#service/ppf" data-page-link="service" data-service="ppf">Полиуретан</a>
+            <a href="#service/polish" data-page-link="service" data-service="polish">Полировка кузова</a>
+            <a href="#service/headlights" data-page-link="service" data-service="headlights">Полировка фар</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <main id="page-service-armor" class="page-view">
+    <div class="service-page">
+      <div class="container">
+        <a href="#home" class="service-page-back" data-page-link="home">← На главную</a>
+        <h1>Бронирование</h1>
+        <p class="lead">Защита кузова от сколов и царапин. Клеим на зоны риска или на весь кузов. Прозрачная плёнка сохраняет заводской вид автомобиля.</p>
+        <img class="service-hero-img" src="https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=1400&auto=format&fit=crop" alt="Бронирование">
+        <div class="service-page-meta">
+          <span class="meta-tag">Срок: 1–3 дня</span>
+          <span class="meta-tag">Гарантия: 1 год</span>
+          <span class="meta-tag">Зоны риска / весь кузов</span>
+        </div>
+        <div class="service-details">
+          <div>
+            <h3>Что входит</h3>
+            <ul>
+              <li>Осмотр кузова и разметка зон</li>
+              <li>Подготовка поверхности</li>
+              <li>Оклейка полиуретановой плёнкой</li>
+              <li>Контроль кромок и стыков</li>
+              <li>Гарантия и рекомендации по уходу</li>
+            </ul>
+          </div>
+          <div>
+            <h3>Преимущества</h3>
+            <ul>
+              <li>Защита от сколов и царапин</li>
+              <li>Сохраняет заводскую краску</li>
+              <li>Прозрачность без искажений</li>
+              <li>Можно клеить только зоны риска</li>
+            </ul>
+          </div>
+        </div>
+        <a href="#contact" class="service-cta" data-page-link="home" data-preselect="armor">Записаться на эту услугу →</a>
+        <a href="#home" class="share-btn" data-page-link="home">← Все услуги</a>
+        <div class="recently">
+          <h4>Другие услуги</h4>
+          <div class="recently-list">
+            <a href="#service/ppf" data-page-link="service" data-service="ppf">Полиуретан</a>
+            <a href="#service/tint" data-page-link="service" data-service="tint">Тонирование</a>
+            <a href="#service/polish" data-page-link="service" data-service="polish">Полировка кузова</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <main id="page-service-ppf" class="page-view">
+    <div class="service-page">
+      <div class="container">
+        <a href="#home" class="service-page-back" data-page-link="home">← На главную</a>
+        <h1>Оклейка полиуретановыми плёнками</h1>
+        <p class="lead">Полиуретан защищает от сколов и царапин. Клеим на зоны риска или на весь кузов. Один из самых стойких материалов для защиты кузова.</p>
+        <img class="service-hero-img" src="https://images.unsplash.com/photo-1601362840469-51e4d8d58785?q=80&w=1400&auto=format&fit=crop" alt="Полиуретановые плёнки">
+        <div class="service-page-meta">
+          <span class="meta-tag">Срок: 3–5 дней</span>
+          <span class="meta-tag">Гарантия: 1 год</span>
+          <span class="meta-tag">Срок службы: 5–7 лет</span>
+        </div>
+        <div class="service-details">
+          <div>
+            <h3>Что входит</h3>
+            <ul>
+              <li>Подбор плёнки под цвет и задачу</li>
+              <li>Подготовка и обезжиривание кузова</li>
+              <li>Оклейка с прогревом и подворотом кромок</li>
+              <li>Контроль стыков и кромок</li>
+              <li>Гарантия и уход</li>
+            </ul>
+          </div>
+          <div>
+            <h3>Преимущества</h3>
+            <ul>
+              <li>Высокая стойкость к сколам</li>
+              <li>Не желтеет со временем</li>
+              <li>Сохраняет заводскую краску</li>
+              <li>Подходит для премиум-авто</li>
+            </ul>
+          </div>
+        </div>
+        <a href="#contact" class="service-cta" data-page-link="home" data-preselect="ppf">Записаться на эту услугу →</a>
+        <a href="#home" class="share-btn" data-page-link="home">← Все услуги</a>
+        <div class="recently">
+          <h4>Другие услуги</h4>
+          <div class="recently-list">
+            <a href="#service/armor" data-page-link="service" data-service="armor">Бронирование</a>
+            <a href="#service/vinyl" data-page-link="service" data-service="vinyl">Винил</a>
+            <a href="#service/defense" data-page-link="service" data-service="defense">Защитные плёнки</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <main id="page-service-vinyl" class="page-view">
+    <div class="service-page">
+      <div class="container">
+        <a href="#home" class="service-page-back" data-page-link="home">← На главную</a>
+        <h1>Оклейка виниловыми плёнками</h1>
+        <p class="lead">Винил меняет цвет и фактуру кузова. Матовые, глянцевые и сатиновые варианты. Отличный способ обновить внешний вид без покраски.</p>
+        <img class="service-hero-img" src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=1400&auto=format&fit=crop" alt="Виниловые плёнки">
+        <div class="service-page-meta">
+          <span class="meta-tag">Срок: 2–4 дня</span>
+          <span class="meta-tag">Гарантия: 1 год</span>
+          <span class="meta-tag">Срок службы: 3–5 лет</span>
+        </div>
+        <div class="service-details">
+          <div>
+            <h3>Что входит</h3>
+            <ul>
+              <li>Подбор цвета и фактуры</li>
+              <li>Подготовка кузова</li>
+              <li>Оклейка виниловой плёнкой</li>
+              <li>Контроль кромок и стыков</li>
+              <li>Гарантия и уход</li>
+            </ul>
+          </div>
+          <div>
+            <h3>Преимущества</h3>
+            <ul>
+              <li>Смена цвета без покраски</li>
+              <li>Матовые, глянцевые, сатиновые варианты</li>
+              <li>Защищает лак от мелких повреждений</li>
+              <li>Легко снимается без следов</li>
+            </ul>
+          </div>
+        </div>
+        <a href="#contact" class="service-cta" data-page-link="home" data-preselect="vinyl">Записаться на эту услугу →</a>
+        <a href="#home" class="share-btn" data-page-link="home">← Все услуги</a>
+        <div class="recently">
+          <h4>Другие услуги</h4>
+          <div class="recently-list">
+            <a href="#service/color" data-page-link="service" data-service="color">Цветные плёнки</a>
+            <a href="#service/ppf" data-page-link="service" data-service="ppf">Полиуретан</a>
+            <a href="#service/polish" data-page-link="service" data-service="polish">Полировка кузова</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <main id="page-service-defense" class="page-view">
+    <div class="service-page">
+      <div class="container">
+        <a href="#home" class="service-page-back" data-page-link="home">← На главную</a>
+        <h1>Оклейка защитными плёнками</h1>
+        <p class="lead">Прозрачный барьер от реагентов, песка и мелких повреждений. Подходит для повседневной защиты кузова.</p>
+        <img class="service-hero-img" src="https://images.unsplash.com/photo-1607860108855-64acf2078ed9?q=80&w=1400&auto=format&fit=crop" alt="Защитные плёнки">
+        <div class="service-page-meta">
+          <span class="meta-tag">Срок: 1–2 дня</span>
+          <span class="meta-tag">Гарантия: 1 год</span>
+          <span class="meta-tag">Прозрачная защита</span>
+        </div>
+        <div class="service-details">
+          <div>
+            <h3>Что входит</h3>
+            <ul>
+              <li>Осмотр и подготовка кузова</li>
+              <li>Оклейка защитной плёнкой</li>
+              <li>Контроль кромок</li>
+              <li>Гарантия и рекомендации</li>
+            </ul>
+          </div>
+          <div>
+            <h3>Преимущества</h3>
+            <ul>
+              <li>Защита от реагентов и песка</li>
+              <li>Прозрачность без искажений</li>
+              <li>Доступнее полиуретана</li>
+              <li>Быстрый срок работ</li>
+            </ul>
+          </div>
+        </div>
+        <a href="#contact" class="service-cta" data-page-link="home" data-preselect="defense">Записаться на эту услугу →</a>
+        <a href="#home" class="share-btn" data-page-link="home">← Все услуги</a>
+        <div class="recently">
+          <h4>Другие услуги</h4>
+          <div class="recently-list">
+            <a href="#service/ppf" data-page-link="service" data-service="ppf">Полиуретан</a>
+            <a href="#service/armor" data-page-link="service" data-service="armor">Бронирование</a>
+            <a href="#service/tint" data-page-link="service" data-service="tint">Тонирование</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <main id="page-service-color" class="page-view">
+    <div class="service-page">
+      <div class="container">
+        <a href="#home" class="service-page-back" data-page-link="home">← На главную</a>
+        <h1>Оклейка цветными плёнками</h1>
+        <p class="lead">Смена цвета без покраски. Оригинальный лак остаётся под плёнкой. Можно выбрать глянец, мат или сатин.</p>
+        <img class="service-hero-img" src="https://images.unsplash.com/photo-1580273916550-e323be2ae537?q=80&w=1400&auto=format&fit=crop" alt="Цветные плёнки">
+        <div class="service-page-meta">
+          <span class="meta-tag">Срок: 2–4 дня</span>
+          <span class="meta-tag">Гарантия: 1 год</span>
+          <span class="meta-tag">Глянец / мат / сатин</span>
+        </div>
+        <div class="service-details">
+          <div>
+            <h3>Что входит</h3>
+            <ul>
+              <li>Подбор цвета и фактуры</li>
+              <li>Подготовка кузова</li>
+              <li>Оклейка цветной плёнкой</li>
+              <li>Контроль кромок и стыков</li>
+              <li>Гарантия и уход</li>
+            </ul>
+          </div>
+          <div>
+            <h3>Преимущества</h3>
+            <ul>
+              <li>Смена цвета без покраски</li>
+              <li>Оригинальный лак под плёнкой</li>
+              <li>Можно вернуть заводской вид</li>
+              <li>Защита от мелких повреждений</li>
+            </ul>
+          </div>
+        </div>
+        <a href="#contact" class="service-cta" data-page-link="home" data-preselect="color">Записаться на эту услугу →</a>
+        <a href="#home" class="share-btn" data-page-link="home">← Все услуги</a>
+        <div class="recently">
+          <h4>Другие услуги</h4>
+          <div class="recently-list">
+            <a href="#service/vinyl" data-page-link="service" data-service="vinyl">Винил</a>
+            <a href="#service/ppf" data-page-link="service" data-service="ppf">Полиуретан</a>
+            <a href="#service/polish" data-page-link="service" data-service="polish">Полировка кузова</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <main id="page-service-polish" class="page-view">
+    <div class="service-page">
+      <div class="container">
+        <a href="#home" class="service-page-back" data-page-link="home">← На главную</a>
+        <h1>Полировка кузова</h1>
+        <p class="lead">Убираем царапины и голограммы, возвращаем глубину цвета. Работаем с разными типами лака.</p>
+        <img class="service-hero-img" src="https://images.unsplash.com/photo-1607860108855-64acf2078ed9?q=80&w=1400&auto=format&fit=crop" alt="Полировка кузова">
+        <div class="service-page-meta">
+          <span class="meta-tag">Срок: 1–2 дня</span>
+          <span class="meta-tag">Гарантия: 1 год</span>
+          <span class="meta-tag">Восстановление блеска</span>
+        </div>
+        <div class="service-details">
+          <div>
+            <h3>Что входит</h3>
+            <ul>
+              <li>Мойка и обезжиривание кузова</li>
+              <li>Оценка состояния лака</li>
+              <li>Полировка в несколько этапов</li>
+              <li>Защитное покрытие</li>
+              <li>Гарантия и уход</li>
+            </ul>
+          </div>
+          <div>
+            <h3>Преимущества</h3>
+            <ul>
+              <li>Убирает царапины и голограммы</li>
+              <li>Возвращает глубину цвета</li>
+              <li>Подготавливает кузов к защите</li>
+              <li>Визуально омолаживает авто</li>
+            </ul>
+          </div>
+        </div>
+        <a href="#contact" class="service-cta" data-page-link="home" data-preselect="polish">Записаться на эту услугу →</a>
+        <a href="#home" class="share-btn" data-page-link="home">← Все услуги</a>
+        <div class="recently">
+          <h4>Другие услуги</h4>
+          <div class="recently-list">
+            <a href="#service/headlights" data-page-link="service" data-service="headlights">Полировка фар</a>
+            <a href="#service/ppf" data-page-link="service" data-service="ppf">Полиуретан</a>
+            <a href="#service/armor" data-page-link="service" data-service="armor">Бронирование</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <main id="page-service-headlights" class="page-view">
+    <div class="service-page">
+      <div class="container">
+        <a href="#home" class="service-page-back" data-page-link="home">← На главную</a>
+        <h1>Полировка фар</h1>
+        <p class="lead">Возвращаем прозрачность и яркость свету. Убираем желтизну и помутнение. Улучшает видимость ночью.</p>
+        <img class="service-hero-img" src="https://images.unsplash.com/photo-1580273916550-e323be2ae537?q=80&w=1400&auto=format&fit=crop" alt="Полировка фар">
+        <div class="service-page-meta">
+          <span class="meta-tag">Срок: 1–2 часа</span>
+          <span class="meta-tag">Гарантия: 1 год</span>
+          <span class="meta-tag">Защитное покрытие</span>
+        </div>
+        <div class="service-details">
+          <div>
+            <h3>Что входит</h3>
+            <ul>
+              <li>Мойка и подготовка фар</li>
+              <li>Шлифовка и полировка</li>
+              <li>Нанесение защитного покрытия</li>
+              <li>Гарантия и уход</li>
+            </ul>
+          </div>
+          <div>
+            <h3>Преимущества</h3>
+            <ul>
+              <li>Возвращает прозрачность</li>
+              <li>Убирает желтизну и помутнение</li>
+              <li>Улучшает видимость ночью</li>
+              <li>Быстрый срок работ</li>
+            </ul>
+          </div>
+        </div>
+        <a href="#contact" class="service-cta" data-page-link="home" data-preselect="headlights">Записаться на эту услугу →</a>
+        <a href="#home" class="share-btn" data-page-link="home">← Все услуги</a>
+        <div class="recently">
+          <h4>Другие услуги</h4>
+          <div class="recently-list">
+            <a href="#service/polish" data-page-link="service" data-service="polish">Полировка кузова</a>
+            <a href="#service/tint" data-page-link="service" data-service="tint">Тонирование</a>
+            <a href="#service/defense" data-page-link="service" data-service="defense">Защитные плёнки</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ================= ПЛАВАЮЩИЕ КНОПКИ ================= -->
+  <button class="quick-fab" id="quickFab" aria-label="Быстрая запись">
+    <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+  </button>
+
+  <button class="to-top" id="toTop" aria-label="Наверх">
+    <svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+  </button>
+
+  <!-- ================= МОДАЛКА ================= -->
+  <div class="modal-backdrop" id="modalBackdrop"></div>
+  <div class="modal" id="quickModal" role="dialog" aria-modal="true" aria-labelledby="quickModalTitle">
+    <div class="modal-inner">
+      <button class="modal-close" id="modalClose" aria-label="Закрыть">×</button>
+      <h3 id="quickModalTitle">Быстрая запись</h3>
+      <p class="muted" id="quickModalMuted">Оставьте телефон — перезвоним и подберём время.</p>
+      <form class="quick-form" id="quickForm">
+        <div class="form-group">
+          <label for="qName">Имя</label>
+          <input type="text" id="qName" name="name" placeholder="Ваше имя" required>
+        </div>
+        <div class="form-group">
+          <label for="qPhone">Телефон</label>
+          <input type="tel" id="qPhone" name="phone" placeholder="+7 (___) ___-__-__" required>
+        </div>
+        <button type="submit" class="btn btn-primary form-submit">Отправить</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // ===== ДАННЫЕ УСЛУГ =====
+    const SERVICES = {
+      tint:       { title: 'Тонирование' },
+      armor:      { title: 'Бронирование' },
+      ppf:        { title: 'Оклейка полиуретановыми плёнками' },
+      vinyl:      { title: 'Оклейка виниловыми плёнками' },
+      defense:    { title: 'Оклейка защитными плёнками' },
+      color:      { title: 'Оклейка цветными плёнками' },
+      polish:     { title: 'Полировка кузова' },
+      headlights: { title: 'Полировка фар' }
+    };
+
+    // ===== PRELOADER =====
+    window.addEventListener('load', () => {
+      const preloader = document.getElementById('preloader');
+      if (preloader) setTimeout(() => preloader.classList.add('hidden'), 400);
+    });
+
+    // ===== SCROLL PROGRESS =====
+    const scrollProgress = document.getElementById('scrollProgress');
+    window.addEventListener('scroll', () => {
+      const h = document.documentElement;
+      const scrolled = h.scrollTop / (h.scrollHeight - h.clientHeight) * 100;
+      if (scrollProgress) scrollProgress.style.width = scrolled + '%';
+    }, { passive: true });
+
+    // ===== HEADER SCROLL =====
+    const header = document.getElementById('header');
+    window.addEventListener('scroll', () => {
+      if (header) header.classList.toggle('scrolled', window.scrollY > 30);
+    }, { passive: true });
+
+    // ===== THEME TOGGLE =====
+    const themeToggle = document.getElementById('themeToggle');
+    const root = document.documentElement;
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'light') root.classList.add('light');
+    if (themeToggle) {
+      themeToggle.addEventListener('click', () => {
+        root.classList.toggle('light');
+        const isLight = root.classList.contains('light');
+        localStorage.setItem('theme', isLight ? 'light' : 'dark');
+        themeToggle.setAttribute('aria-pressed', String(isLight));
+      });
+    }
+
+    // ===== SITE MENU =====
+    const menuTrigger = document.getElementById('menuTrigger');
+    const siteMenu = document.getElementById('siteMenu');
+    const siteMenuClose = document.getElementById('siteMenuClose');
+
+    function openMenu() {
+      siteMenu.classList.add('open');
+      siteMenu.setAttribute('aria-hidden', 'false');
+      menuTrigger.classList.add('active');
+      menuTrigger.setAttribute('aria-expanded', 'true');
+      document.body.classList.add('no-scroll');
+    }
+    function closeMenu() {
+      siteMenu.classList.remove('open');
+      siteMenu.setAttribute('aria-hidden', 'true');
+      menuTrigger.classList.remove('active');
+      menuTrigger.setAttribute('aria-expanded', 'false');
+      document.body.classList.remove('no-scroll');
+    }
+    if (menuTrigger) menuTrigger.addEventListener('click', () => {
+      siteMenu.classList.contains('open') ? closeMenu() : openMenu();
+    });
+    if (siteMenuClose) siteMenuClose.addEventListener('click', closeMenu);
+    if (siteMenu) siteMenu.addEventListener('click', (e) => {
+      if (e.target === siteMenu) closeMenu();
+    });
+
+    // ===== РОУТИНГ =====
+    function showPage(pageId, sectionId) {
+      document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active'));
+      const page = document.getElementById('page-' + pageId);
+      if (page) page.classList.add('active');
+      // Принудительно показать reveal-элементы на странице услуги
+      if (pageId.startsWith('service-')) {
+        page.querySelectorAll('.reveal').forEach(el => el.classList.add('visible'));
+        window.scrollTo({ top: 0, behavior: 'instant' in window ? 'instant' : 'auto' });
+      } else if (sectionId) {
+        const target = document.getElementById(sectionId);
+        if (target) {
+          setTimeout(() => target.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60);
+        } else {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      } else {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+
+    function routeFromHash() {
+      const hash = window.location.hash || '#home';
+      if (hash.startsWith('#service/')) {
+        const id = hash.replace('#service/', '');
+        showPage('service-' + id);
+        // обновим заголовок
+        if (SERVICES[id]) document.title = SERVICES[id].title + ' — Lummar Detailing';
+        return;
+      }
+      if (hash === '#home' || hash === '' || hash === '#') {
+        showPage('home');
+        document.title = 'Lummar detailing';
+        return;
+      }
+      // обычные секции — считаем главной
+      const section = hash.replace('#', '');
+      if (document.getElementById(section) && document.getElementById('page-home')) {
+        showPage('home', section);
+        document.title = 'Lummar detailing';
+      }
+    }
+
+    window.addEventListener('hashchange', routeFromHash);
+    window.addEventListener('DOMContentLoaded', routeFromHash);
+
+    // Перехват кликов по ссылкам навигации услуг
+    document.addEventListener('click', (e) => {
+      const a = e.target.closest('a[data-page-link], a[href^="#service/"]');
+      if (!a) return;
+      const href = a.getAttribute('href') || '';
+      if (href.startsWith('#service/')) {
+        e.preventDefault();
+        const id = href.replace('#service/', '');
+        if (window.location.hash === href) {
+          routeFromHash();
+        } else {
+          window.location.hash = href;
+        }
+        // Если это кнопка "Записаться на эту услугу"
+        if (a.dataset.preselect) {
+          setTimeout(() => {
+            const sel = document.getElementById('service');
+            if (sel) sel.value = a.dataset.preselect;
+          }, 100);
+        }
+        closeMenu();
+      } else if (href === '#home') {
+        e.preventDefault();
+        if (window.location.hash !== '#home') {
+          window.location.hash = '#home';
+        } else {
+          routeFromHash();
+        }
+        closeMenu();
+      }
+    });
+
+    // ===== FILTER =====
+    const filterBar = document.getElementById('filterBar');
+    const serviceCards = document.querySelectorAll('.service-card');
+    if (filterBar) {
+      filterBar.addEventListener('click', (e) => {
+        const btn = e.target.closest('.filter-btn');
+        if (!btn) return;
+        filterBar.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const filter = btn.dataset.filter;
+        serviceCards.forEach(card => {
+          const cat = card.dataset.category;
+          card.classList.toggle('hidden-filter', filter !== 'all' && cat !== filter);
+        });
+      });
+    }
+
+    // ===== PRICE MAP TABS =====
+    const pmTabs = document.querySelectorAll('.pm-tab');
+    const pmItems = document.querySelectorAll('.pm-item');
+    pmTabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        pmTabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        const f = tab.dataset.pm;
+        pmItems.forEach(item => {
+          item.style.display = (f === 'all' || item.dataset.pmcat === f) ? '' : 'none';
+        });
+      });
+    });
+
+    // ===== REVEAL =====
+    const reveals = document.querySelectorAll('.reveal, .service-card');
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12 });
+    reveals.forEach(el => io.observe(el));
+
+    // ===== COMPARE =====
+    const compareToggle = document.getElementById('compareToggle');
+    const compareCount = document.getElementById('compareCount');
+    const compareChecks = document.querySelectorAll('.compare-check');
+    let compareItems = new Set();
+
+    compareChecks.forEach(chk => {
+      chk.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const id = chk.dataset.compare;
+        if (compareItems.has(id)) {
+          compareItems.delete(id);
+          chk.classList.remove('active');
+        } else {
+          compareItems.add(id);
+          chk.classList.add('active');
+        }
+        if (compareCount) compareCount.textContent = compareItems.size;
+        if (compareToggle) {
+          compareToggle.disabled = compareItems.size === 0;
+          compareToggle.classList.toggle('has-items', compareItems.size > 0);
+        }
+      });
+    });
+
+    // ===== FAV =====
+    document.querySelectorAll('.fav-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        btn.classList.toggle('active');
+      });
+    });
+
+    // ===== HERO PARALLAX =====
+    const heroGlow = document.getElementById('heroGlow');
+    if (heroGlow) {
+      document.querySelector('.hero')?.addEventListener('mousemove', (e) => {
+        const x = (e.clientX / window.innerWidth - 0.5) * 20;
+        const y = (e.clientY / window.innerHeight - 0.5) * 20;
+        heroGlow.style.transform = `translate(${x}px, ${y}px)`;
+      });
+    }
+
+    // ===== COUNTERS =====
+    const counters = document.querySelectorAll('[data-count]');
+    const counterIO = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const el = entry.target;
+          const target = +el.dataset.count;
+          const suffix = el.dataset.suffix || '';
+          let current = 0;
+          const step = Math.max(1, Math.floor(target / 60));
+          const tick = () => {
+            current += step;
+            if (current >= target) { el.textContent = target + suffix; return; }
+            el.textContent = current + suffix;
+            requestAnimationFrame(tick);
+          };
+          tick();
+          counterIO.unobserve(el);
+        }
+      });
+    }, { threshold: 0.5 });
+    counters.forEach(c => counterIO.observe(c));
+
+    // ===== CALCULATOR =====
+    const prices = {
+      tint: 8000, armor: 40000, ppf: 90000, vinyl: 60000,
+      defense: 50000, color: 70000, polish: 8000, headlights: 2500
+    };
+    const calcService = document.getElementById('calcService');
+    const calcClass = document.getElementById('calcClass');
+    const calcPrice = document.getElementById('calcPrice');
+    function updateCalc() {
+      if (!calcService || !calcClass || !calcPrice) return;
+      const base = prices[calcService.value] || 0;
+      const mult = parseFloat(calcClass.value) || 1;
+      const total = Math.round(base * mult);
+      calcPrice.textContent = 'от ' + total.toLocaleString('ru-RU') + ' ₽';
+    }
+    if (calcService) calcService.addEventListener('change', updateCalc);
+    if (calcClass) calcClass.addEventListener('change', updateCalc);
+    updateCalc();
+
+    // ===== FAQ =====
+    document.querySelectorAll('.faq-q').forEach(q => {
+      q.addEventListener('click', () => {
+        const item = q.closest('.faq-item');
+        const answer = item.querySelector('.faq-a');
+        const isOpen = item.classList.contains('open');
+        document.querySelectorAll('.faq-item.open').forEach(o => {
+          o.classList.remove('open');
+          o.querySelector('.faq-a').style.maxHeight = null;
+        });
+        if (!isOpen) {
+          item.classList.add('open');
+          answer.style.maxHeight = answer.scrollHeight + 'px';
+        }
+      });
+    });
+
+    // ===== ФОРМЫ =====
+    const contactForm = document.getElementById('contactForm');
+    if (contactForm) {
+      contactForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        let valid = true;
+        contactForm.querySelectorAll('[required]').forEach(inp => {
+          const group = inp.closest('.form-group');
+          if (!inp.value.trim()) {
+            group.classList.add('invalid');
+            valid = false;
+          } else {
+            group.classList.remove('invalid');
+          }
+        });
+        if (valid) {
+          const success = document.getElementById('formSuccess');
+          if (success) {
+            success.style.display = 'block';
+            setTimeout(() => success.style.display = 'none', 4000);
+          }
+          contactForm.reset();
+        }
+      });
+    }
+
+    // ===== QUICK FAB / MODAL =====
+    const quickFab = document.getElementById('quickFab');
+    const quickModal = document.getElementById('quickModal');
+    const modalBackdrop = document.getElementById('modalBackdrop');
+    const modalClose = document.getElementById('modalClose');
+    const quickModalMuted = document.getElementById('quickModalMuted');
+
+    function openModal(preselectId) {
+      quickModal.classList.add('open');
+      modalBackdrop.classList.add('open');
+      document.body.classList.add('no-scroll');
+      if (preselectId && SERVICES[preselectId]) {
+        quickModalMuted.textContent = 'Услуга: ' + SERVICES[preselectId].title + '. Оставьте телефон — перезвоним.';
+      } else {
+        quickModalMuted.textContent = 'Оставьте телефон — перезвоним и подберём время.';
+      }
+    }
+    function closeModal() {
+      quickModal.classList.remove('open');
+      modalBackdrop.classList.remove('open');
+      document.body.classList.remove('no-scroll');
+    }
+    if (quickFab) quickFab.addEventListener('click', () => openModal());
+    if (modalClose) modalClose.addEventListener('click', closeModal);
+    if (modalBackdrop) modalBackdrop.addEventListener('click', closeModal);
+    const quickForm = document.getElementById('quickForm');
+    if (quickForm) {
+      quickForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        closeModal();
+        quickForm.reset();
+      });
+    }
+
+    // ===== TO TOP =====
+    const toTop = document.getElementById('toTop');
+    window.addEventListener('scroll', () => {
+      if (toTop) toTop.classList.toggle('visible', window.scrollY > 400);
+    }, { passive: true });
+    if (toTop) toTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+    // ===== CURSOR =====
+    const dot = document.getElementById('cursorDot');
+    const ring = document.getElementById('cursorRing');
+    if (dot && ring && window.matchMedia('(hover: hover)').matches) {
+      let mx = 0, my = 0, rx = 0, ry = 0;
+      document.addEventListener('mousemove', (e) => {
+        mx = e.clientX; my = e.clientY;
+        dot.style.left = mx + 'px';
+        dot.style.top = my + 'px';
+      });
+      const loop = () => {
+        rx += (mx - rx) * 0.18;
+        ry += (my - ry) * 0.18;
+        ring.style.left = rx + 'px';
+        ring.style.top = ry + 'px';
+        requestAnimationFrame(loop);
+      };
+      loop();
+      document.querySelectorAll('a, button, .service-card').forEach(el => {
+        el.addEventListener('mouseenter', () => ring.classList.add('grow'));
+        el.addEventListener('mouseleave', () => ring.classList.remove('grow'));
+      });
+    }
+  </script>
+</body>
+</html>
